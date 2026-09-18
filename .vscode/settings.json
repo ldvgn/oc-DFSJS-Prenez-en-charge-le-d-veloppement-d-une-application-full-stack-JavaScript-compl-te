@@ -1,0 +1,12 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, .npmrc, .nvmrc, next.config.ts, next-env.d.ts, tsconfig.json, eslint.config.mjs, postcss.config.mjs, components.json, css.d.ts, docker-compose.yml, prisma7.config.ts, playwright.config.ts",
+    ".gitignore": ".gitattributes, .editorconfig"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true
+  }
+}
