@@ -49,15 +49,15 @@ model Comment {
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
 }
 
 model Subscription {
   id      String @id @default(cuid())
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String
-  topic   Topic  @relation(fields: [topicId], references: [id])
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
   topicId String
 
   @@unique([userId, topicId])
