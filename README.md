@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MDD — Monde Du Dev
 
-## Getting Started
+Application communautaire pour les développeurs : abonnements à des thèmes (topics), publication d'articles et commentaires.
 
-First, run the development server:
+## Stack technique
+
+- [Next.js](https://nextjs.org) 16 (App Router)
+- [Prisma](https://www.prisma.io) 7 (ORM) avec l'adapter [`@prisma/adapter-pg`](https://www.prisma.io/docs/orm/overview/databases/postgresql)
+- PostgreSQL 16 (via Docker)
+- TypeScript, Tailwind CSS
+
+## Prérequis
+
+- Node.js 20+
+- Docker (pour la base de données PostgreSQL)
+
+## Installation
+
+1. Installer les dépendances :
+
+   ```bash
+   npm install
+   ```
+
+2. Créer un fichier `.env` à la racine du projet avec les variables suivantes :
+
+   ```env
+   POSTGRES_USER=
+   POSTGRES_PASSWORD=
+   POSTGRES_DB=
+   POSTGRES_PORT=5432
+   DATABASE_URL="postgresql://<user>:<password>@localhost:5432/<db>"
+   ```
+
+3. Démarrer la base de données PostgreSQL :
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. Appliquer le schéma de base de données :
+
+   ```bash
+   npm run db:migrate
+   ```
+
+5. Peupler la base avec des données de test :
+
+   ```bash
+   npm run db:seed
+   ```
+
+## Lancer le projet en développement
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts disponibles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Commande            | Description                                      |
+| -------------------- | ------------------------------------------------- |
+| `npm run dev`        | Lance le serveur de développement Next.js         |
+| `npm run build`      | Build de production                               |
+| `npm run start`      | Lance le build de production                      |
+| `npm run lint`       | Vérifie le code avec ESLint                       |
+| `npm run db:migrate` | Crée/applique les migrations Prisma               |
+| `npm run db:seed`    | Insère des données de test en base                |
 
-## Learn More
+## Modèle de données
 
-To learn more about Next.js, take a look at the following resources:
+- **User** : compte utilisateur (username, email, mot de passe hashé)
+- **Topic** : thème auquel un utilisateur peut s'abonner
+- **Post** : article publié par un utilisateur, associé à un topic
+- **Comment** : commentaire d'un utilisateur sur un post
+- **Subscription** : abonnement d'un utilisateur à un topic
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Le schéma complet est défini dans [prisma/schema.prisma](prisma/schema.prisma).
