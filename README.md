@@ -5,6 +5,7 @@ Application communautaire pour les développeurs : abonnements à des thèmes (t
 ## Stack technique
 
 - [Next.js](https://nextjs.org) 16 (App Router)
+- [Auth.js](https://authjs.dev) 5 (authentification par identifiants + JWT)
 - [Prisma](https://www.prisma.io) 7 (ORM) avec l'adapter [`@prisma/adapter-pg`](https://www.prisma.io/docs/orm/overview/databases/postgresql)
 - PostgreSQL 16 (via Docker)
 - TypeScript, Tailwind CSS
@@ -30,6 +31,13 @@ Application communautaire pour les développeurs : abonnements à des thèmes (t
    POSTGRES_DB=
    POSTGRES_PORT=5432
    DATABASE_URL="postgresql://<user>:<password>@localhost:5432/<db>"
+   AUTH_SECRET=
+   ```
+
+   `AUTH_SECRET` sert à signer/chiffrer le token de session (Auth.js). Générer une valeur avec :
+
+   ```bash
+   npx auth secret
    ```
 
 3. Démarrer la base de données PostgreSQL :
@@ -78,3 +86,9 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
 - **Subscription** : abonnement d'un utilisateur à un topic
 
 Le schéma complet est défini dans [prisma/schema.prisma](prisma/schema.prisma).
+
+## Authentification
+
+- `/`, `/login` et `/register` sont publiques ; toutes les autres routes (ex. `/posts`) nécessitent une session.
+- La protection des routes est faite dans [proxy.ts](proxy.ts), qui lit le token de session via `getToken()` (Auth.js) sur chaque requête.
+- La configuration du provider `Credentials` (validation, hash du mot de passe) est dans [lib/auth.ts](lib/auth.ts).
