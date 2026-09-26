@@ -126,4 +126,10 @@
   html {
     @apply font-sans;
   }
+	h1 {
+		@apply text-2xl font-bold;
+	}
+	h2 {
+		@apply text-base font-bold;
+	}
 }

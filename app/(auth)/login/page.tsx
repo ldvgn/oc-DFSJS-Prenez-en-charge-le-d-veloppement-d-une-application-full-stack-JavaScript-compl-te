@@ -1,34 +1,38 @@
 import { signIn } from "@/lib/auth";
 import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
+import AuthHeader from "@/app/(auth)/components/auth-header";
+import LoginForm from "./components/login-form";
 
 export default function Login() {
-  return (
-    <form
-      action={async (formData) => {
-        "use server";
-        try {
-          await signIn("credentials", {
-            ...Object.fromEntries(formData),
-            redirectTo: "/posts",
-          });
-        } catch (error) {
-          if (error instanceof AuthError) {
-            return redirect(`/login?error=CredentialsSignin`);
-          }
-          throw error;
+  async function authenticate(
+    _prevState: string | undefined,
+    formData: FormData,
+  ) {
+    "use server";
+    try {
+      await signIn("credentials", {
+        ...Object.fromEntries(formData),
+        redirectTo: "/posts",
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case "CredentialsSignin":
+            return "Invalid credentials";
+          default:
+            return "An error occurred";
         }
-      }}
-    >
-      <label>
-        Email
-        <input name="identifier" type="text" />
-      </label>
-      <label>
-        Password
-        <input name="password" type="password" />
-      </label>
-      <button>Sign In</button>
-    </form>
+      }
+      throw error; // les redirects NEXT_REDIRECT doivent remonter
+    }
+  }
+
+  return (
+    <>
+      <AuthHeader title="Se connecter" />
+      <div className="md:max-w-sm mx-auto">
+        <LoginForm action={authenticate} />
+      </div>
+    </>
   );
 }

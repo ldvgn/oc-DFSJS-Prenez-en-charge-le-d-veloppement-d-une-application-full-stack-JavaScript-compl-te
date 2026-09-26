@@ -1,29 +1,29 @@
 # MDD — Monde Du Dev
 
-Application communautaire pour les développeurs : abonnements à des thèmes (topics), publication d'articles et commentaires.
+Community app for developers: subscribe to topics, publish articles, and comment.
 
-## Stack technique
+## Tech stack
 
 - [Next.js](https://nextjs.org) 16 (App Router)
-- [Auth.js](https://authjs.dev) 5 (authentification par identifiants + JWT)
-- [Prisma](https://www.prisma.io) 7 (ORM) avec l'adapter [`@prisma/adapter-pg`](https://www.prisma.io/docs/orm/overview/databases/postgresql)
+- [Auth.js](https://authjs.dev) 5 (credentials authentication + JWT)
+- [Prisma](https://www.prisma.io) 7 (ORM) with the [`@prisma/adapter-pg`](https://www.prisma.io/docs/orm/overview/databases/postgresql) adapter
 - PostgreSQL 16 (via Docker)
 - TypeScript, Tailwind CSS
 
-## Prérequis
+## Prerequisites
 
 - Node.js 20+
-- Docker (pour la base de données PostgreSQL)
+- Docker (for the PostgreSQL database)
 
 ## Installation
 
-1. Installer les dépendances :
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Créer un fichier `.env` à la racine du projet avec les variables suivantes :
+2. Create a `.env` file at the project root with the following variables:
 
    ```env
    POSTGRES_USER=
@@ -34,61 +34,61 @@ Application communautaire pour les développeurs : abonnements à des thèmes (t
    AUTH_SECRET=
    ```
 
-   `AUTH_SECRET` sert à signer/chiffrer le token de session (Auth.js). Générer une valeur avec :
+   `AUTH_SECRET` is used to sign/encrypt the session token (Auth.js). Generate a value with:
 
    ```bash
    npx auth secret
    ```
 
-3. Démarrer la base de données PostgreSQL :
+3. Start the PostgreSQL database:
 
    ```bash
    docker compose up -d
    ```
 
-4. Appliquer le schéma de base de données :
+4. Apply the database schema:
 
    ```bash
    npm run db:migrate
    ```
 
-5. Peupler la base avec des données de test :
+5. Seed the database with test data:
 
    ```bash
    npm run db:seed
    ```
 
-## Lancer le projet en développement
+## Running the project in development
 
 ```bash
 npm run dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Scripts disponibles
+## Available scripts
 
-| Commande            | Description                                      |
-| -------------------- | ------------------------------------------------- |
-| `npm run dev`        | Lance le serveur de développement Next.js         |
-| `npm run build`      | Build de production                               |
-| `npm run start`      | Lance le build de production                      |
-| `npm run lint`       | Vérifie le code avec ESLint                       |
-| `npm run db:migrate` | Crée/applique les migrations Prisma               |
-| `npm run db:seed`    | Insère des données de test en base                |
+| Command               | Description                             |
+| ---------------------- | ---------------------------------------- |
+| `npm run dev`          | Starts the Next.js development server    |
+| `npm run build`        | Production build                         |
+| `npm run start`        | Runs the production build                |
+| `npm run lint`         | Checks the code with ESLint              |
+| `npm run db:migrate`   | Creates/applies Prisma migrations        |
+| `npm run db:seed`      | Inserts test data into the database      |
 
-## Modèle de données
+## Data model
 
-- **User** : compte utilisateur (username, email, mot de passe hashé)
-- **Topic** : thème auquel un utilisateur peut s'abonner
-- **Post** : article publié par un utilisateur, associé à un topic
-- **Comment** : commentaire d'un utilisateur sur un post
-- **Subscription** : abonnement d'un utilisateur à un topic
+- **User**: user account (username, email, hashed password)
+- **Topic**: theme a user can subscribe to
+- **Post**: article published by a user, associated with a topic
+- **Comment**: a user's comment on a post
+- **Subscription**: a user's subscription to a topic
 
-Le schéma complet est défini dans [prisma/schema.prisma](prisma/schema.prisma).
+The full schema is defined in [prisma/schema.prisma](prisma/schema.prisma).
 
-## Authentification
+## Authentication
 
-- `/`, `/login` et `/register` sont publiques ; toutes les autres routes (ex. `/posts`) nécessitent une session.
-- La protection des routes est faite dans [proxy.ts](proxy.ts), qui lit le token de session via `getToken()` (Auth.js) sur chaque requête.
-- La configuration du provider `Credentials` (validation, hash du mot de passe) est dans [lib/auth.ts](lib/auth.ts).
+- `/`, `/login` and `/register` are public; every other route (e.g. `/posts`) requires a session.
+- Route protection is handled in [proxy.ts](proxy.ts), which reads the session token via `getToken()` (Auth.js) on every request.
+- The `Credentials` provider configuration (validation, password hashing) lives in [lib/auth.ts](lib/auth.ts).

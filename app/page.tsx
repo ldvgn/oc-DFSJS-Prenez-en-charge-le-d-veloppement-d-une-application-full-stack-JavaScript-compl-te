@@ -8,11 +8,19 @@ export default function Home() {
       <Logo size="lg" />
 
       <div className="flex flex-col gap-8 sm:flex-row">
-        <Button variant="outline">
-          <Link href="/login">Se connecter</Link>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/login" />}
+        >
+          Se connecter
         </Button>
-        <Button variant="outline">
-          <Link href="/register">S&apos;inscrire</Link>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/register" />}
+        >
+          S&apos;inscrire
         </Button>
       </div>
     </main>
