@@ -1,55 +1,72 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/client";
-import bcrypt from "bcryptjs";
+import "dotenv/config";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
+/** Utilisateurs de test (mots de passe conformes aux specs). */
+const USERS = [
+  { username: "alice", email: "alice@mdd.dev", password: "Password123!" },
+  { username: "bob", email: "bob@mdd.dev", password: "Password123!" },
+];
 
-const prisma = new PrismaClient({ adapter });
+const TOPICS = [
+  { name: "JavaScript", description: "Le langage du web." },
+  { name: "TypeScript", description: "JavaScript typé." },
+  { name: "Python", description: "Polyvalent et lisible." },
+];
 
 async function main() {
-  console.log("Starting seed...");
+  // Nettoyage : ordre inverse des dépendances
+  await prisma.comment.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.subscription.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.topic.deleteMany();
 
-  const hashedPassword = await bcrypt.hash("azerty123", 10);
+  // Utilisateurs : Better Auth crée User + Account (hash scrypt)
+  const createdUsers = [];
+  for (const u of USERS) {
+    const { user } = await auth.api.signUpEmail({
+      body: {
+        name: u.username, // name = username (pas de nom complet dans les specs)
+        username: u.username,
+        email: u.email,
+        password: u.password,
+      },
+    });
+    createdUsers.push(user);
+  }
 
-  const user = await prisma.user.upsert({
-    where: { email: "test@mdd.com" },
-    update: {},
-    create: {
-      email: "test@mdd.com",
-      username: "testuser",
-      password: hashedPassword,
-    },
+  // Données métier : Prisma directement
+  await prisma.topic.createMany({ data: TOPICS });
+  const topics = await prisma.topic.findMany();
+
+  const [alice, bob] = createdUsers;
+
+  await prisma.subscription.createMany({
+    data: [
+      { userId: alice.id, topicId: topics[0].id },
+      { userId: alice.id, topicId: topics[1].id },
+    ],
   });
 
-  const topics = [
-    { name: "JavaScript", description: "Tout sur l'écosystème JavaScript." },
-    { name: "React", description: "Actualités et bonnes pratiques React." },
-    { name: "Node.js", description: "Développement backend avec Node.js." },
-    { name: "DevOps", description: "CI/CD, conteneurisation et infra." },
-  ];
-
-  const createdTopics = await Promise.all(
-    topics.map((topic) =>
-      prisma.topic.upsert({
-        where: { name: topic.name },
-        update: {},
-        create: topic,
-      }),
-    ),
-  );
-
-  await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
-      title: "Les nouveautés de JavaScript ES2025",
-      content: "Un tour d'horizon des dernières fonctionnalités du langage.",
-      authorId: user.id,
-      topicId: createdTopics.find((t) => t.name === "JavaScript")!.id,
+      title: "Bien démarrer avec TypeScript",
+      content: "Quelques conseils pour débuter...",
+      authorId: bob.id,
+      topicId: topics[1].id,
     },
   });
 
-  console.log("Seed completed.");
+  await prisma.comment.create({
+    data: {
+      content: "Merci, très utile !",
+      authorId: alice.id,
+      postId: post.id,
+    },
+  });
 }
 
 main()
@@ -57,6 +74,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

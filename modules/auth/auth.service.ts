@@ -1,24 +1,47 @@
-import { UserRepository } from "../users/user.repository";
-import bcrypt from "bcryptjs";
+// modules/auth/auth.service.ts
+import { headers } from "next/headers";
+import { APIError } from "better-auth/api";
+import { auth } from "@/lib/auth";
 
 export class AuthService {
-  constructor(private readonly userRepository = new UserRepository()) {}
+  /**
+   * Authenticate via better-auth (by email or username depending on the ID format)
+   *
+   * @param identifier - Email or username
+   * @param password - User password
+   * @returns `true` if the credentials are valid, `false` otherwise
+   * @throws Any technical error (database, configuration).
+   */
+  async login(identifier: string, password: string): Promise<boolean> {
+    try {
+      if (identifier.includes("@")) {
+        await auth.api.signInEmail({ body: { email: identifier, password } });
+      } else {
+        await auth.api.signInUsername({
+          body: { username: identifier, password },
+        });
+      }
+      return true;
+    } catch (error) {
+      if (error instanceof APIError) return false;
+      throw error;
+    }
+  }
 
   /**
-   * Check the login credentials.
-   *
-   * @param identifier Email or username allowing to identify an user
-   * @param password Password's user
-   * @returns User without password or null
+   * Log out the current user.
    */
-  async login(identifier: string, password: string) {
-    const user = await this.userRepository.findByEmailOrUsername(identifier);
-    if (!user) return null;
+  async logout(): Promise<void> {
+    await auth.api.signOut({ headers: await headers() });
+  }
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return null;
-
-    const { password: _hash, ...publicUser } = user;
-    return publicUser;
+  /**
+   * Get the logged-in user.
+   *
+   * @returns The session user, or `null` if not logged in
+   */
+  async getCurrentUser() {
+    const session = await auth.api.getSession({ headers: await headers() });
+    return session?.user ?? null;
   }
 }

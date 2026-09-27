@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginInput } from "@/modules/auth/schemas";
+import { loginSchema, type LoginInput } from "@/modules/auth/auth.schemas";
 import {
   Field,
   FieldGroup,
@@ -12,19 +12,15 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import type { LoginState } from "@/modules/auth/auth.actions";
 
 type LoginFormProps = {
-  action: (
-    prevState: string | undefined,
-    formData: FormData,
-  ) => Promise<string | undefined>;
+  action: (prevState: LoginState, formData: FormData) => Promise<LoginState>;
 };
 
 export default function LoginForm({ action }: LoginFormProps) {
-  const [errorMessage, formAction, isPending] = useActionState(
-    action,
-    undefined,
-  );
+  const [state, formAction, isPending] = useActionState(action, undefined);
+
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: "", password: "" },
@@ -34,7 +30,7 @@ export default function LoginForm({ action }: LoginFormProps) {
     const formData = new FormData();
     formData.append("identifier", data.identifier);
     formData.append("password", data.password);
-    formAction(formData); // délègue à la Server Action + useActionState
+    startTransition(() => formAction(formData));
   }
 
   return (
@@ -66,7 +62,7 @@ export default function LoginForm({ action }: LoginFormProps) {
         </Field>
 
         <FieldError
-          errors={errorMessage ? [{ message: errorMessage }] : undefined}
+          errors={state?.error ? [{ message: state.error }] : undefined}
         />
 
         <Button
