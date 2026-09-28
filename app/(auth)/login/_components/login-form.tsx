@@ -37,7 +37,7 @@ export default function LoginForm({ action }: LoginFormProps) {
       <FieldGroup>
         <Field data-invalid={!!errors.identifier}>
           <FieldLabel htmlFor="identifier">
-            E-mail ou nom d’utilisateur
+            E-mail ou nom d&apos;utilisateur
           </FieldLabel>
           <Input
             id="identifier"

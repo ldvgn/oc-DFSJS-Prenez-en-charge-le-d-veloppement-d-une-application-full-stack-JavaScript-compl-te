@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-import { AuthService } from "@/modules/auth/auth.service";
+import { authService } from "@/modules/auth/auth.service";
 import { logoutAction } from "@/modules/auth/auth.actions";
-
-const authService = new AuthService();
 
 export default async function Posts() {
   const user = await authService.getCurrentUser();

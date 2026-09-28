@@ -24,7 +24,6 @@ type RegisterFormProps = {
   ) => Promise<RegisterState>;
 };
 
-/** Formulaire d'inscription (nom d'utilisateur, e-mail, mot de passe). */
 export default function RegisterForm({ action }: RegisterFormProps) {
   const [state, formAction, isPending] = useActionState(action, undefined);
   const form = useForm<RegisterInput>({
@@ -44,7 +43,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
         <Field data-invalid={!!errors.username}>
-          <FieldLabel htmlFor="username">Nom d’utilisateur</FieldLabel>
+          <FieldLabel htmlFor="username">Nom d&apos;utilisateur</FieldLabel>
           <Input
             id="username"
             autoComplete="username"
@@ -83,7 +82,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         />
 
         <Button type="submit" disabled={isPending} className="mx-auto">
-          {isPending ? "Inscription…" : "S’inscrire"}
+          {isPending ? "Inscription…" : "S'inscrire"}
         </Button>
       </FieldGroup>
     </form>

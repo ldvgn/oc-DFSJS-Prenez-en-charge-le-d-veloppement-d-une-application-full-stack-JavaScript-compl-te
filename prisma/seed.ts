@@ -2,7 +2,7 @@ import "dotenv/config";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-/** Utilisateurs de test (mots de passe conformes aux specs). */
+/** Test users (passwords match the spec rules). */
 const USERS = [
   { username: "alice", email: "alice@mdd.dev", password: "Password123!" },
   { username: "bob", email: "bob@mdd.dev", password: "Password123!" },
@@ -15,7 +15,7 @@ const TOPICS = [
 ];
 
 async function main() {
-  // Nettoyage : ordre inverse des dépendances
+  // Cleanup: reverse dependency order
   await prisma.comment.deleteMany();
   await prisma.post.deleteMany();
   await prisma.subscription.deleteMany();
@@ -24,12 +24,12 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.topic.deleteMany();
 
-  // Utilisateurs : Better Auth crée User + Account (hash scrypt)
+  // Users: Better Auth creates User + Account (scrypt hash)
   const createdUsers = [];
   for (const u of USERS) {
     const { user } = await auth.api.signUpEmail({
       body: {
-        name: u.username, // name = username (pas de nom complet dans les specs)
+        name: u.username, // name = username (no full name in the specs)
         username: u.username,
         email: u.email,
         password: u.password,
@@ -38,7 +38,7 @@ async function main() {
     createdUsers.push(user);
   }
 
-  // Données métier : Prisma directement
+  // Domain data: Prisma directly
   await prisma.topic.createMany({ data: TOPICS });
   const topics = await prisma.topic.findMany();
 

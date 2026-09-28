@@ -2,9 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { loginSchema, registerSchema } from "./auth.schemas";
-import { AuthService } from "./auth.service";
-
-const authService = new AuthService();
+import { authService } from "./auth.service";
 
 /** State returned to the login form. */
 export type LoginState = { error?: string } | undefined;
@@ -56,7 +54,7 @@ export async function registerAction(
   });
 
   if (!parsed.success) {
-    return { error: "Données invalides" };
+    return { error: "Données invalides." };
   }
 
   const error = await authService.register(parsed.data);

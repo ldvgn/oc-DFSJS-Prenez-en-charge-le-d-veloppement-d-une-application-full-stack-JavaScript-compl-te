@@ -1,4 +1,3 @@
-// modules/auth/auth.service.ts
 import { headers } from "next/headers";
 import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
@@ -36,7 +35,7 @@ export class AuthService {
    * The session cookie is set by the `nextCookies` plugin.
    *
    * @param input - Validated registration form data
-   * @returns `true` if the account was created, `false` if the username or email is already taken
+   * @returns `null` on success, or `"USERNAME_TAKEN"` / `"EMAIL_TAKEN"` / `"UNKNOWN"` on failure
    * @throws Any technical error (database, configuration)
    */
   async register(
@@ -47,7 +46,7 @@ export class AuthService {
     try {
       await auth.api.signUpEmail({
         body: {
-          name: username, // pas de nom complet dans les specs
+          name: username,
           username,
           email,
           password,
@@ -65,14 +64,14 @@ export class AuthService {
   }
 
   /**
-   * Log out the current user.
+   * Logs out the current user.
    */
   async logout(): Promise<void> {
     await auth.api.signOut({ headers: await headers() });
   }
 
   /**
-   * Get the logged-in user.
+   * Reads the current session from the request headers.
    *
    * @returns The session user, or `null` if not logged in
    */
@@ -81,3 +80,5 @@ export class AuthService {
     return session?.user ?? null;
   }
 }
+
+export const authService = new AuthService();
