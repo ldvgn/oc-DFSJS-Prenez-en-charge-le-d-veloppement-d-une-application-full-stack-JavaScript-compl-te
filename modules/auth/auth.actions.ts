@@ -1,21 +1,23 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { loginSchema } from "./auth.schemas";
+import { loginSchema, registerSchema } from "./auth.schemas";
 import { AuthService } from "./auth.service";
 
 const authService = new AuthService();
 
-/** État renvoyé au formulaire de connexion. */
+/** State returned to the login form. */
 export type LoginState = { error?: string } | undefined;
 
+/** State returned to the registration form. */
+export type RegisterState = { error?: string } | undefined;
+
 /**
+ * Authenticates a user by email or username.
  *
- * Authenticate a user by email or username.
- *
- * @param _prevState - Previous state returned by `useActionState` (not used).
+ * @param _prevState - Previous state returned by `useActionState` (not used)
  * @param formData - Form data (`identifier`, `password`)
- * @returns An error or nothing (redirects to /posts).
+ * @returns An error, or nothing (redirects to /posts)
  */
 export async function loginAction(
   _prevState: LoginState,
@@ -30,11 +32,39 @@ export async function loginAction(
     return { error: "Veuillez remplir tous les champs." };
   }
 
-  const ok = await authService.login(
-    parsed.data.identifier,
-    parsed.data.password,
-  );
-  if (!ok) return { error: "Identifiants incorrects." };
+  const result = await authService.login(parsed.data);
+  if (!result) return { error: "Identifiants incorrects." };
+
+  redirect("/posts");
+}
+
+/**
+ * Registers a new user, then redirects them to their feed.
+ *
+ * @param _prevState - Previous state returned by `useActionState` (not used)
+ * @param formData - Form data (`username`, `email`, `password`)
+ * @returns An error, or nothing (redirects to /posts)
+ */
+export async function registerAction(
+  _prevState: RegisterState,
+  formData: FormData,
+): Promise<RegisterState> {
+  const parsed = registerSchema.safeParse({
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    return { error: "Données invalides" };
+  }
+
+  const error = await authService.register(parsed.data);
+  if (error === "USERNAME_TAKEN")
+    return { error: "Ce nom d'utilisateur est déjà utilisé." };
+  if (error === "EMAIL_TAKEN")
+    return { error: "Cette adresse e-mail est déjà utilisée." };
+  if (error) return { error: "L'inscription a échoué. Veuillez réessayer." };
 
   redirect("/posts");
 }
