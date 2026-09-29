@@ -3,7 +3,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import { auth } from "@/lib/auth";
 
 const publicRoutes = ["/", "/login", "/register"];
-const authRoutes = ["/login", "/register"];
+const authRoutes = ["/", "/login", "/register"];
 const defaultAuthenticatedRoute = "/posts";
 
 export const proxy = async (req: NextRequest) => {
