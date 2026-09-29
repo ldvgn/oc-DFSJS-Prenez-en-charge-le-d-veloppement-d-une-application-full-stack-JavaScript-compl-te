@@ -1,14 +1,11 @@
-import Link from "next/link";
-import { MoveLeft } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
+import BackLink from "@/components/shared/back-link";
 
 export default function AuthHeader({ title }: { title: string }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="container mx-auto order-1 md:order-2">
-        <Link href="/" aria-label="Retour" className="inline-flex w-fit">
-          <MoveLeft size={39} />
-        </Link>
+        <BackLink />
       </div>
 
       <div className="order-2 md:order-1 md:border-b ">
