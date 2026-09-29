@@ -2,12 +2,13 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RegisterForm from "@/app/(auth)/register/_components/register-form";
+import { registerAction } from "@/modules/auth/auth.actions";
 
-const action = vi.fn();
+vi.mock("@/modules/auth/auth.actions", () => ({ registerAction: vi.fn() }));
 
 describe("RegisterForm", () => {
   it("shows validation errors without calling the action", async () => {
-    render(<RegisterForm action={action} />);
+    render(<RegisterForm />);
 
     await userEvent.click(screen.getByRole("button", { name: "S'inscrire" }));
 
@@ -16,14 +17,14 @@ describe("RegisterForm", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Adresse e-mail invalide")).toBeInTheDocument();
     expect(screen.getByText("Au moins 8 caractères")).toBeInTheDocument();
-    expect(action).not.toHaveBeenCalled();
+    expect(registerAction).not.toHaveBeenCalled();
   });
 
   it("shows the error returned by the action", async () => {
-    action.mockResolvedValueOnce({
-      error: "Cette adresse e-mail est déjà utilisée.",
+    vi.mocked(registerAction).mockResolvedValueOnce({
+      errors: { email: ["Cette adresse e-mail est déjà utilisée."] },
     });
-    render(<RegisterForm action={action} />);
+    render(<RegisterForm />);
 
     await userEvent.type(screen.getByLabelText("Nom d'utilisateur"), "alice");
     await userEvent.type(
@@ -33,7 +34,7 @@ describe("RegisterForm", () => {
     await userEvent.type(screen.getByLabelText("Mot de passe"), "Password123!");
     await userEvent.click(screen.getByRole("button", { name: "S'inscrire" }));
 
-    expect(action).toHaveBeenCalledOnce();
+    expect(registerAction).toHaveBeenCalledOnce();
     expect(
       await screen.findByText("Cette adresse e-mail est déjà utilisée."),
     ).toBeInTheDocument();

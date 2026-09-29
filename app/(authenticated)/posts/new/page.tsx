@@ -1,7 +1,6 @@
 import { topicService } from "@/modules/topic/topic.service";
 import PageHeader from "../../_components/page-header";
 import PostForm from "./_components/post-form";
-import { createPostAction } from "@/modules/post/post.actions";
 
 export default async function PostCreate() {
   const topics = await topicService.getAll();
@@ -15,7 +14,7 @@ export default async function PostCreate() {
       />
 
       <div className="md:max-w-sm mx-auto mt-8">
-        <PostForm topics={topics} action={createPostAction} />
+        <PostForm topics={topics} />
       </div>
     </>
   );

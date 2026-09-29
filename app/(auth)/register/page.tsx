@@ -1,5 +1,4 @@
 import AuthHeader from "../_components/auth-header";
-import { registerAction } from "@/modules/auth/auth.actions";
 import RegisterForm from "./_components/register-form";
 
 export default function Register() {
@@ -7,7 +6,7 @@ export default function Register() {
     <>
       <AuthHeader title="Inscription" />
       <div className="md:max-w-sm mx-auto">
-        <RegisterForm action={registerAction} />
+        <RegisterForm />
       </div>
     </>
   );

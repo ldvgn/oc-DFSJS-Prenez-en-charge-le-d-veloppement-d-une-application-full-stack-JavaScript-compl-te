@@ -12,9 +12,10 @@ import {
   type CommentType,
 } from "@/modules/comment/comment.schemas";
 import { createCommentAction } from "@/modules/comment/comment.actions";
+import { useServerErrors } from "@/hooks/use-server-errors";
 
 export default function CommentForm({ postId }: { postId: string }) {
-  const [state, formAction, pending] = useActionState(
+  const [state, formAction, isPending] = useActionState(
     createCommentAction,
     undefined,
   );
@@ -24,16 +25,12 @@ export default function CommentForm({ postId }: { postId: string }) {
     defaultValues: { content: "" },
   });
 
+  useServerErrors(form, state?.errors);
+
   // Clear the field after a successful send.
   useEffect(() => {
-    if (!pending && form.formState.isSubmitSuccessful && !state) form.reset();
-  }, [pending, state, form]);
-
-  // Show server-side validation errors on the field.
-  useEffect(() => {
-    const message = state?.errors?.content?.[0];
-    if (message) form.setError("content", { type: "server", message });
-  }, [state, form]);
+    if (!isPending && form.formState.isSubmitSuccessful && !state) form.reset();
+  }, [isPending, state, form]);
 
   function onSubmit(data: CommentType) {
     const formData = new FormData();
@@ -76,7 +73,7 @@ export default function CommentForm({ postId }: { postId: string }) {
         size="icon"
         variant="ghost"
         className="size-14"
-        disabled={pending}
+        disabled={isPending}
         aria-label="Envoyer le commentaire"
       >
         <Send className="size-10 text-primary" />

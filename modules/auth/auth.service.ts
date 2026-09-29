@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
-import { LoginInput, RegisterInput } from "./auth.schemas";
+import { LoginType, RegisterType } from "./auth.schemas";
 import { redirect } from "next/navigation";
 
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
    * @returns `true` if the credentials are valid, `false` otherwise
    * @throws Any technical error (database, configuration)
    */
-  async login(input: LoginInput): Promise<boolean> {
+  async login(input: LoginType): Promise<boolean> {
     const { identifier, password } = input;
 
     try {
@@ -40,7 +40,7 @@ export class AuthService {
    * @throws Any technical error (database, configuration)
    */
   async register(
-    input: RegisterInput,
+    input: RegisterType,
   ): Promise<"USERNAME_TAKEN" | "EMAIL_TAKEN" | "UNKNOWN" | null> {
     const { username, email, password } = input;
 

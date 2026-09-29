@@ -6,17 +6,24 @@ import { authService } from "@/modules/auth/auth.service";
 import { CommentSchema } from "./comment.schemas";
 import { commentService } from "./comment.service";
 
-export type CommentFormState =
+export type CommentState =
   | {
       errors?: { content?: string[] };
       message?: string;
     }
   | undefined;
 
+/**
+ * Adds a comment from the current user to a post, then refreshes the post page.
+ *
+ * @param _prevState - Previous `useActionState` state (unused)
+ * @param formData - `postId`, `content`
+ * @returns Field errors or a message, or nothing on success
+ */
 export async function createCommentAction(
-  _prevState: CommentFormState,
+  _prevState: CommentState,
   formData: FormData,
-): Promise<CommentFormState> {
+): Promise<CommentState> {
   const user = await authService.requireUser();
 
   const postId = String(formData.get("postId"));

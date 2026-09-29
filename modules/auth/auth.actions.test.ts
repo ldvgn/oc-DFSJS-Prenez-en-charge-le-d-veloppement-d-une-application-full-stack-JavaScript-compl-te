@@ -14,7 +14,12 @@ describe("loginAction", () => {
 
     const result = await loginAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Veuillez remplir tous les champs." });
+    expect(result).toEqual({
+      errors: {
+        identifier: ["L'e-mail ou le nom d'utilisateur est requis"],
+        password: ["Le mot de passe est requis"],
+      },
+    });
     expect(authService.login).not.toHaveBeenCalled();
     expect(redirect).not.toHaveBeenCalled();
   });
@@ -27,7 +32,7 @@ describe("loginAction", () => {
 
     const result = await loginAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Identifiants incorrects." });
+    expect(result).toEqual({ message: "Identifiants incorrects." });
     expect(redirect).not.toHaveBeenCalled();
   });
 
@@ -56,7 +61,8 @@ describe("registerAction", () => {
 
     const result = await registerAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Données invalides." });
+    expect(result?.errors?.email).toEqual(["Adresse e-mail invalide"]);
+    expect(result?.errors?.password).toBeDefined();
     expect(authService.register).not.toHaveBeenCalled();
   });
 
@@ -69,7 +75,9 @@ describe("registerAction", () => {
 
     const result = await registerAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Ce nom d'utilisateur est déjà utilisé." });
+    expect(result).toEqual({
+      errors: { username: ["Ce nom d'utilisateur est déjà utilisé."] },
+    });
   });
 
   it("returns an error when the email is taken", async () => {
@@ -82,7 +90,7 @@ describe("registerAction", () => {
     const result = await registerAction(undefined, formData);
 
     expect(result).toEqual({
-      error: "Cette adresse e-mail est déjà utilisée.",
+      errors: { email: ["Cette adresse e-mail est déjà utilisée."] },
     });
   });
 
@@ -96,7 +104,7 @@ describe("registerAction", () => {
     const result = await registerAction(undefined, formData);
 
     expect(result).toEqual({
-      error: "L'inscription a échoué. Veuillez réessayer.",
+      message: "L'inscription a échoué. Veuillez réessayer.",
     });
     expect(redirect).not.toHaveBeenCalled();
   });

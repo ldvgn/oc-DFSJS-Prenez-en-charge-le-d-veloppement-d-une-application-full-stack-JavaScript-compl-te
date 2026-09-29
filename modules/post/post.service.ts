@@ -6,7 +6,7 @@ import {
   type PostWithAuthor,
   type SortOrder,
 } from "./post.repository";
-import { type CreatePostInput } from "./post.schemas";
+import { type PostType } from "./post.schemas";
 
 export class PostService {
   constructor(private readonly repository: PostRepository = postRepository) {}
@@ -38,7 +38,7 @@ export class PostService {
    * @param authorId - The author's ID
    * @returns The created post.
    */
-  async create(input: CreatePostInput, authorId: string): Promise<Post> {
+  async create(input: PostType, authorId: string): Promise<Post> {
     return this.repository.create({ ...input, authorId });
   }
 }
