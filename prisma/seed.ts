@@ -54,7 +54,8 @@ async function main() {
   const post = await prisma.post.create({
     data: {
       title: "Bien démarrer avec TypeScript",
-      content: "Quelques conseils pour débuter...",
+      content:
+        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam id accusamus ipsum aliquid beatae adipisci deleniti excepturi sit sapiente dignissimos nihil, laudantium eligendi voluptas recusandae minus odit assumenda atque hic! Omnis, culpa magni? Id asperiores magni quas assumenda, ea mollitia, odit necessitatibus, corporis consequuntur quaerat atque ipsa? Blanditiis ratione, veniam, reiciendis obcaecati aut quisquam commodi, rerum repellendus aspernatur fuga praesentium!",
       authorId: bob.id,
       topicId: topics[1].id,
     },

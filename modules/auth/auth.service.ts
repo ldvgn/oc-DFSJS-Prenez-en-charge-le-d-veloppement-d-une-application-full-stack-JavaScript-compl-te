@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
 import { LoginInput, RegisterInput } from "./auth.schemas";
+import { redirect } from "next/navigation";
 
 export class AuthService {
   /**
@@ -78,6 +79,18 @@ export class AuthService {
   async getCurrentUser() {
     const session = await auth.api.getSession({ headers: await headers() });
     return session?.user ?? null;
+  }
+
+  /**
+   * Returns the current session user, or redirects to /login if the session is missing or invalid.
+   * Use at the top of every protected page and Server Action.
+   *
+   * @returns The session user (never `null`)
+   */
+  async requireUser() {
+    const user = await this.getCurrentUser();
+    if (!user) redirect("/login");
+    return user;
   }
 }
 
