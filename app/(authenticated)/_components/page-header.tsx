@@ -4,17 +4,26 @@ type PageHeaderProps = {
   title: string;
   titleId?: string;
   backHref?: string;
+  align?: "left" | "center";
 };
+
+const alignClasses = {
+  left: "text-left",
+  center: "text-center",
+} as const;
 
 export default function PageHeader({
   title,
   titleId,
   backHref,
+  align = "left",
 }: PageHeaderProps) {
   return (
     <>
       <BackLink href={backHref} />
-      <h1 id={titleId}>{title}</h1>
+      <h1 id={titleId} className={alignClasses[align]}>
+        {title}
+      </h1>
     </>
   );
 }

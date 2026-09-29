@@ -1,22 +1,28 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@/prisma/generated/prisma/client";
+import { Prisma, type Post } from "@/prisma/generated/prisma/client";
+
+const postWithAuthorInclude = {
+  author: { select: { username: true } },
+} satisfies Prisma.PostInclude;
+
+const postDetailInclude = {
+  author: { select: { username: true } },
+  topic: true,
+  comments: {
+    include: { author: { select: { username: true } } },
+    orderBy: { createdAt: "asc" },
+  },
+} satisfies Prisma.PostInclude;
 
 export type PostWithAuthor = Prisma.PostGetPayload<{
-  include: { author: { select: { username: true } } };
+  include: typeof postWithAuthorInclude;
 }>;
 
 export type PostDetail = Prisma.PostGetPayload<{
-  include: {
-    author: { select: { username: true } };
-    topic: true;
-    comments: {
-      include: { author: { select: { username: true } } };
-      orderBy: { createdAt: "asc" };
-    };
-  };
+  include: typeof postDetailInclude;
 }>;
 
-export type SortOrder = "asc" | "desc";
+export type SortOrder = Prisma.SortOrder;
 
 export class PostRepository {
   /**
@@ -27,7 +33,7 @@ export class PostRepository {
    */
   async findAll(order: SortOrder = "desc"): Promise<PostWithAuthor[]> {
     return prisma.post.findMany({
-      include: { author: { select: { username: true } } },
+      include: postWithAuthorInclude,
       orderBy: { createdAt: order },
     });
   }
@@ -41,15 +47,18 @@ export class PostRepository {
   async findById(id: string): Promise<PostDetail | null> {
     return prisma.post.findUnique({
       where: { id },
-      include: {
-        author: { select: { username: true } },
-        topic: true,
-        comments: {
-          include: { author: { select: { username: true } } },
-          orderBy: { createdAt: "asc" },
-        },
-      },
+      include: postDetailInclude,
     });
+  }
+
+  /**
+   * Creates a post.
+   *
+   * @param data - The post data and its author's ID
+   * @returns The created post.
+   */
+  async create(data: Prisma.PostUncheckedCreateInput): Promise<Post> {
+    return prisma.post.create({ data });
   }
 }
 

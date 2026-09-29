@@ -1,3 +1,4 @@
+import { type Post } from "@/prisma/generated/prisma/client";
 import {
   PostRepository,
   postRepository,
@@ -5,6 +6,7 @@ import {
   type PostWithAuthor,
   type SortOrder,
 } from "./post.repository";
+import { type CreatePostInput } from "./post.schemas";
 
 export class PostService {
   constructor(private readonly repository: PostRepository = postRepository) {}
@@ -27,6 +29,17 @@ export class PostService {
    */
   async getById(id: string): Promise<PostDetail | null> {
     return this.repository.findById(id);
+  }
+
+  /**
+   * Creates a post for the given author.
+   *
+   * @param input - Validated post form data
+   * @param authorId - The author's ID
+   * @returns The created post.
+   */
+  async create(input: CreatePostInput, authorId: string): Promise<Post> {
+    return this.repository.create({ ...input, authorId });
   }
 }
 

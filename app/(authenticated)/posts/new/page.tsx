@@ -1,3 +1,22 @@
+import { topicService } from "@/modules/topic/topic.service";
+import PageHeader from "../../_components/page-header";
+import PostForm from "./_components/post-form";
+import { createPostAction } from "@/modules/post/post.actions";
+
 export default async function PostCreate() {
-  return <p>Création de post</p>;
+  const topics = await topicService.getAll();
+
+  return (
+    <>
+      <PageHeader
+        title="Créer un nouvel article"
+        backHref="/posts"
+        align="center"
+      />
+
+      <div className="md:max-w-sm mx-auto mt-8">
+        <PostForm topics={topics} action={createPostAction} />
+      </div>
+    </>
+  );
 }
