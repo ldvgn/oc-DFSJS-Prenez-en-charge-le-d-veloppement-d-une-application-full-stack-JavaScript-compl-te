@@ -1,8 +1,11 @@
+import { authService } from "@/modules/auth/auth.service";
 import { topicService } from "@/modules/topic/topic.service";
 import PageHeader from "../../_components/page-header";
 import PostForm from "./_components/post-form";
 
 export default async function PostCreate() {
+  await authService.requireUser();
+
   const topics = await topicService.getAll();
 
   return (

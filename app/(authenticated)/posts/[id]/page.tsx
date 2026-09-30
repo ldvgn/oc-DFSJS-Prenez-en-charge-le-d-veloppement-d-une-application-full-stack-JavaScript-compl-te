@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
+import { authService } from "@/modules/auth/auth.service";
 import { postService } from "@/modules/post/post.service";
 import { PostMeta } from "../_components/post-meta";
 import PageHeader from "../../_components/page-header";
 import CommentForm from "./_components/comment-form";
 
 export default async function Post({ params }: PageProps<"/posts/[id]">) {
+  await authService.requireUser();
+
   const { id } = await params;
   const post = await postService.getById(id);
 
@@ -25,7 +28,7 @@ export default async function Post({ params }: PageProps<"/posts/[id]">) {
             topic={post.topic.name}
           />
 
-          <p>{post.content}</p>
+          <p className="whitespace-pre-line wrap-break-word">{post.content}</p>
         </article>
 
         <section
@@ -48,7 +51,9 @@ export default async function Post({ params }: PageProps<"/posts/[id]">) {
                         </span>
                       </div>
                       <div className="col-span-10 lg:col-span-7 bg-neutral-200 rounded-lg">
-                        <p className="p-4 min-h-25">{comment.content}</p>
+                        <p className="p-4 min-h-25 whitespace-pre-line wrap-break-word">
+                          {comment.content}
+                        </p>
                       </div>
                     </article>
                   </li>

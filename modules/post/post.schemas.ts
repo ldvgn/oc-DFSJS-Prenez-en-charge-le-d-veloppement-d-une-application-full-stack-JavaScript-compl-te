@@ -7,7 +7,11 @@ export const PostSchema = z.object({
     .trim()
     .min(1, "Le titre est requis")
     .max(100, "100 caractères maximum"),
-  content: z.string().trim().min(1, "Le contenu est requis"),
+  content: z
+    .string()
+    .trim()
+    .min(5, "5 caractères minimum.")
+    .max(5000, "5000 caractères maximum."),
 });
 
 export type PostType = z.infer<typeof PostSchema>;

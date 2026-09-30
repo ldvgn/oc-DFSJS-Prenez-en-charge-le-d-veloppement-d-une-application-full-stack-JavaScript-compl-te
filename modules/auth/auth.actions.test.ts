@@ -36,6 +36,20 @@ describe("loginAction", () => {
     expect(redirect).not.toHaveBeenCalled();
   });
 
+  it("returns a generic error when the service throws", async () => {
+    vi.mocked(authService.login).mockRejectedValue(new Error("DB down"));
+    const formData = new FormData();
+    formData.append("identifier", "jeandupont");
+    formData.append("password", "Password1!");
+
+    const result = await loginAction(undefined, formData);
+
+    expect(result).toEqual({
+      message: "La connexion a échoué. Veuillez réessayer.",
+    });
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
   it("redirects to /posts on successful login", async () => {
     vi.mocked(authService.login).mockResolvedValue(true);
     const formData = new FormData();
@@ -96,6 +110,21 @@ describe("registerAction", () => {
 
   it("returns a generic error for any other failure", async () => {
     vi.mocked(authService.register).mockResolvedValue("UNKNOWN");
+    const formData = new FormData();
+    formData.append("username", "jeandupont");
+    formData.append("email", "jean@test.com");
+    formData.append("password", "Password1!");
+
+    const result = await registerAction(undefined, formData);
+
+    expect(result).toEqual({
+      message: "L'inscription a échoué. Veuillez réessayer.",
+    });
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it("returns a generic error when the service throws", async () => {
+    vi.mocked(authService.register).mockRejectedValue(new Error("DB down"));
     const formData = new FormData();
     formData.append("username", "jeandupont");
     formData.append("email", "jean@test.com");

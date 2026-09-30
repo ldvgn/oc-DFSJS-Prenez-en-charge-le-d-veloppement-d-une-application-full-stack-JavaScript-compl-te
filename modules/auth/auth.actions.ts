@@ -32,7 +32,13 @@ export async function loginAction(
     return { errors: z.flattenError(parsed.error).fieldErrors };
   }
 
-  const result = await authService.login(parsed.data);
+  let result;
+  try {
+    result = await authService.login(parsed.data);
+  } catch {
+    return { message: "La connexion a échoué. Veuillez réessayer." };
+  }
+
   if (!result) return { message: "Identifiants incorrects." };
 
   redirect("/posts");
@@ -66,9 +72,17 @@ export async function registerAction(
     return { errors: z.flattenError(parsed.error).fieldErrors };
   }
 
-  const error = await authService.register(parsed.data);
+  let error;
+  try {
+    error = await authService.register(parsed.data);
+  } catch {
+    return { message: "L'inscription a échoué. Veuillez réessayer." };
+  }
+
   if (error === "USERNAME_TAKEN")
-    return { errors: { username: ["Ce nom d'utilisateur est déjà utilisé."] } };
+    return {
+      errors: { username: ["Ce nom d'utilisateur est déjà utilisé."] },
+    };
   if (error === "EMAIL_TAKEN")
     return { errors: { email: ["Cette adresse e-mail est déjà utilisée."] } };
   if (error) return { message: "L'inscription a échoué. Veuillez réessayer." };

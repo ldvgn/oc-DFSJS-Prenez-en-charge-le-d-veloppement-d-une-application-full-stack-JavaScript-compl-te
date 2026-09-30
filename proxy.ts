@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { auth } from "@/lib/auth";
 
-const publicRoutes = ["/", "/login", "/register"];
 const authRoutes = ["/", "/login", "/register"];
 const defaultAuthenticatedRoute = "/posts";
 
@@ -15,11 +14,6 @@ export const proxy = async (req: NextRequest) => {
     if (session) {
       return NextResponse.redirect(new URL(defaultAuthenticatedRoute, req.url));
     }
-    return NextResponse.next();
-  }
-
-  // Let public routes pass through without checking.
-  if (publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
 

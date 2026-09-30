@@ -3,7 +3,7 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/modules/auth/auth.service";
-import { CommentSchema } from "./comment.schemas";
+import { CreateCommentSchema } from "./comment.schemas";
 import { commentService } from "./comment.service";
 
 export type CommentState =
@@ -26,15 +26,22 @@ export async function createCommentAction(
 ): Promise<CommentState> {
   const user = await authService.requireUser();
 
-  const postId = String(formData.get("postId"));
-  const parsed = CommentSchema.safeParse({ content: formData.get("content") });
+  const parsed = CreateCommentSchema.safeParse({
+    content: formData.get("content"),
+    postId: formData.get("postId"),
+  });
 
   if (!parsed.success) {
-    return { errors: z.flattenError(parsed.error).fieldErrors };
+    const { content } = z.flattenError(parsed.error).fieldErrors;
+    return content
+      ? { errors: { content } }
+      : { message: "Article introuvable." };
   }
 
+  const { postId, ...comment } = parsed.data;
+
   try {
-    await commentService.create(parsed.data, postId, user.id);
+    await commentService.create(comment, postId, user.id);
   } catch {
     return { message: "Échec de l'envoi. Réessayez plus tard." };
   }

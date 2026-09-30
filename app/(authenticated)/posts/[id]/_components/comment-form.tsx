@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,8 +22,9 @@ export default function CommentForm({ postId }: { postId: string }) {
 
   const form = useForm<CommentType>({
     resolver: zodResolver(CommentSchema),
-    defaultValues: { content: "" },
   });
+
+  const { errors } = form.formState;
 
   useServerErrors(form, state?.errors);
 
@@ -44,29 +45,23 @@ export default function CommentForm({ postId }: { postId: string }) {
       onSubmit={form.handleSubmit(onSubmit)}
       className="grid grid-cols-10 gap-8"
     >
-      <Controller
-        name="content"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field
-            data-invalid={fieldState.invalid}
-            className="col-start-1 col-end-9 lg:col-span-8 lg:col-start-2"
-          >
-            <FieldLabel htmlFor="content" className="sr-only">
-              Commentaire
-            </FieldLabel>
-            <Textarea
-              {...field}
-              id="content"
-              aria-invalid={fieldState.invalid}
-              placeholder="Écrivez ici votre commentaire"
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
+      <Field
+        data-invalid={!!errors.content}
+        className="col-start-1 col-end-9 lg:col-span-8 lg:col-start-2"
+      >
+        <FieldLabel htmlFor="content" className="sr-only">
+          Commentaire
+        </FieldLabel>
+        <Textarea
+          {...form.register("content")}
+          id="content"
+          aria-invalid={!!errors.content}
+          placeholder="Écrivez ici votre commentaire"
+        />
+        {errors.content && <FieldError errors={[errors.content]} />}
+      </Field>
 
-      {state?.message && <p aria-live="polite">{state.message}</p>}
+      {state?.message && <p role="alert">{state.message}</p>}
 
       <Button
         type="submit"

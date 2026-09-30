@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <main className="flex-1 justify-items-center content-center py-12 px-4">
       <div className="max-w-6xl mx-auto text-center">
-        <p className="text-base font-semibold text-indigo-400">404</p>
+        <p className="text-base font-semibold text-primary">404</p>
         <h1 className="text-4xl font-bold mb-8">Page introuvable</h1>
 
         <div className="mb-8">

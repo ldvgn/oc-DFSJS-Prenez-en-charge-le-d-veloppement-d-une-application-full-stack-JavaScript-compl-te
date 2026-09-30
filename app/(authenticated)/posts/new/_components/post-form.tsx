@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PostSchema, type PostType } from "@/modules/post/post.schemas";
 import { createPostAction } from "@/modules/post/post.actions";
@@ -29,8 +29,9 @@ export default function PostForm({ topics }: { topics: Topic[] }) {
 
   const form = useForm<PostType>({
     resolver: zodResolver(PostSchema),
-    defaultValues: { topicId: "", title: "", content: "" },
   });
+
+  const { errors } = form.formState;
 
   useServerErrors(form, state?.errors);
 
@@ -45,73 +46,56 @@ export default function PostForm({ topics }: { topics: Topic[] }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
-        <Controller
-          name="topicId"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="topicId" className="sr-only">
-                Thème
-              </FieldLabel>
-              <NativeSelect
-                {...field}
-                id="topicId"
-                aria-invalid={fieldState.invalid}
-              >
-                <NativeSelectOption value="" disabled>
-                  Sélectionner un thème
-                </NativeSelectOption>
-                {topics.map((topic) => (
-                  <NativeSelectOption key={topic.id} value={topic.id}>
-                    {topic.name}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        <Field data-invalid={!!errors.topicId}>
+          <FieldLabel htmlFor="topicId" className="sr-only">
+            Thème
+          </FieldLabel>
+          <NativeSelect
+            {...form.register("topicId")}
+            id="topicId"
+            defaultValue=""
+            aria-invalid={!!errors.topicId}
+          >
+            <NativeSelectOption value="" disabled>
+              Sélectionner un thème
+            </NativeSelectOption>
+            {topics.map((topic) => (
+              <NativeSelectOption key={topic.id} value={topic.id}>
+                {topic.name}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+          {errors.topicId && <FieldError errors={[errors.topicId]} />}
+        </Field>
 
-        <Controller
-          name="title"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="title" className="sr-only">
-                Titre de l&apos;article
-              </FieldLabel>
-              <Input
-                {...field}
-                id="title"
-                aria-invalid={fieldState.invalid}
-                placeholder="Titre de l’article"
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        <Field data-invalid={!!errors.title}>
+          <FieldLabel htmlFor="title" className="sr-only">
+            Titre de l&apos;article
+          </FieldLabel>
+          <Input
+            {...form.register("title")}
+            id="title"
+            aria-invalid={!!errors.title}
+            placeholder="Titre de l'article"
+          />
+          {errors.title && <FieldError errors={[errors.title]} />}
+        </Field>
 
-        <Controller
-          name="content"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="content" className="sr-only">
-                Contenu de l&apos;article
-              </FieldLabel>
-              <Textarea
-                {...field}
-                id="content"
-                rows={10}
-                aria-invalid={fieldState.invalid}
-                placeholder="Contenu de l’article"
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        <Field data-invalid={!!errors.content}>
+          <FieldLabel htmlFor="content" className="sr-only">
+            Contenu de l&apos;article
+          </FieldLabel>
+          <Textarea
+            {...form.register("content")}
+            id="content"
+            rows={10}
+            aria-invalid={!!errors.content}
+            placeholder="Contenu de l'article"
+          />
+          {errors.content && <FieldError errors={[errors.content]} />}
+        </Field>
 
-        {state?.message && <p aria-live="polite">{state.message}</p>}
+        {state?.message && <p role="alert">{state.message}</p>}
 
         <Button type="submit" disabled={isPending} className="mx-auto">
           {isPending ? "Création…" : "Créer"}
