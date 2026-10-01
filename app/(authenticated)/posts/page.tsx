@@ -6,11 +6,11 @@ import { authService } from "@/modules/auth/auth.service";
 import { PostCard } from "./_components/post-card";
 
 export default async function Posts({ searchParams }: PageProps<"/posts">) {
-  await authService.requireUser();
+  const user = await authService.requireUser();
 
   const { order: orderParam } = await searchParams;
   const order = orderParam === "asc" ? "asc" : "desc";
-  const posts = await postService.getAll(order);
+  const posts = await postService.getFeed(user.id, order);
 
   return (
     <>
@@ -23,7 +23,13 @@ export default async function Posts({ searchParams }: PageProps<"/posts">) {
       </div>
 
       {posts.length === 0 ? (
-        <p>Aucun article pour le moment.</p>
+        <p>
+          Aucun article pour le moment.{" "}
+          <Link href="/topics" className="underline">
+            Abonnez-vous à des thèmes
+          </Link>{" "}
+          pour voir leurs articles.
+        </p>
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {posts.map((post) => (

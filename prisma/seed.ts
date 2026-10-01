@@ -41,13 +41,14 @@ async function main() {
   // Domain data: Prisma directly
   await prisma.topic.createMany({ data: TOPICS });
   const topics = await prisma.topic.findMany();
+  const topicId = (name: string) => topics.find((t) => t.name === name)!.id;
 
   const [alice, bob] = createdUsers;
 
   await prisma.subscription.createMany({
     data: [
-      { userId: alice.id, topicId: topics[0].id },
-      { userId: alice.id, topicId: topics[1].id },
+      { userId: alice.id, topicId: topicId("JavaScript") },
+      { userId: alice.id, topicId: topicId("TypeScript") },
     ],
   });
 
@@ -57,7 +58,18 @@ async function main() {
       content:
         "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam id accusamus ipsum aliquid beatae adipisci deleniti excepturi sit sapiente dignissimos nihil, laudantium eligendi voluptas recusandae minus odit assumenda atque hic! Omnis, culpa magni? Id asperiores magni quas assumenda, ea mollitia, odit necessitatibus, corporis consequuntur quaerat atque ipsa? Blanditiis ratione, veniam, reiciendis obcaecati aut quisquam commodi, rerum repellendus aspernatur fuga praesentium!",
       authorId: bob.id,
-      topicId: topics[1].id,
+      topicId: topicId("TypeScript"),
+    },
+  });
+
+  // Topic alice doesn't follow: hidden from her feed
+  await prisma.post.create({
+    data: {
+      title: "Les compréhensions de liste en Python",
+      content:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Asperiores, quae. Dolorum, natus.",
+      authorId: bob.id,
+      topicId: topicId("Python"),
     },
   });
 

@@ -4,13 +4,18 @@ import type { PostDetail, PostWithAuthor, SortOrder } from "./post.schemas";
 
 export class PostRepository {
   /**
-   * Returns all posts with their author's username, sorted by creation date.
+   * Returns the posts of the topics a user subscribes to, sorted by creation date.
    *
+   * @param userId - Subscriber ID
    * @param order - "desc" (newest first, default) or "asc"
-   * @returns All posts.
+   * @returns The posts with their author
    */
-  async findAll(order: SortOrder = "desc"): Promise<PostWithAuthor[]> {
+  async findAllBySubscriber(
+    userId: string,
+    order: SortOrder = "desc",
+  ): Promise<PostWithAuthor[]> {
     return prisma.post.findMany({
+      where: { topic: { subscriptions: { some: { userId } } } },
       include: {
         author: { select: { username: true } },
       },

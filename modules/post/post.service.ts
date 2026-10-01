@@ -11,13 +11,14 @@ export class PostService {
   constructor(private readonly repository: PostRepository = postRepository) {}
 
   /**
-   * Lists posts by creation date.
+   * Lists the posts of the user's subscribed topics by creation date.
    *
+   * @param userId - Subscriber ID
    * @param order - `"desc"` (default) or `"asc"`
    * @returns The posts with their author
    */
-  async getAll(order?: SortOrder): Promise<PostWithAuthor[]> {
-    return this.repository.findAll(order);
+  async getFeed(userId: string, order?: SortOrder): Promise<PostWithAuthor[]> {
+    return this.repository.findAllBySubscriber(userId, order);
   }
 
   /**
