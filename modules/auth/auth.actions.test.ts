@@ -14,7 +14,12 @@ describe("loginAction", () => {
 
     const result = await loginAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Veuillez remplir tous les champs." });
+    expect(result).toEqual({
+      errors: {
+        identifier: ["L'e-mail ou le nom d'utilisateur est requis"],
+        password: ["Le mot de passe est requis"],
+      },
+    });
     expect(authService.login).not.toHaveBeenCalled();
     expect(redirect).not.toHaveBeenCalled();
   });
@@ -27,7 +32,17 @@ describe("loginAction", () => {
 
     const result = await loginAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Identifiants incorrects." });
+    expect(result).toEqual({ message: "Identifiants incorrects." });
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it("rethrows technical errors", async () => {
+    vi.mocked(authService.login).mockRejectedValue(new Error("DB down"));
+    const formData = new FormData();
+    formData.append("identifier", "jeandupont");
+    formData.append("password", "Password1!");
+
+    await expect(loginAction(undefined, formData)).rejects.toThrow("DB down");
     expect(redirect).not.toHaveBeenCalled();
   });
 
@@ -56,24 +71,13 @@ describe("registerAction", () => {
 
     const result = await registerAction(undefined, formData);
 
-    expect(result).toEqual({ error: "Données invalides." });
+    expect(result?.errors?.email).toEqual(["Adresse e-mail invalide"]);
+    expect(result?.errors?.password).toBeDefined();
     expect(authService.register).not.toHaveBeenCalled();
   });
 
-  it("returns an error when the username is taken", async () => {
-    vi.mocked(authService.register).mockResolvedValue("USERNAME_TAKEN");
-    const formData = new FormData();
-    formData.append("username", "jeandupont");
-    formData.append("email", "jean@test.com");
-    formData.append("password", "Password1!");
-
-    const result = await registerAction(undefined, formData);
-
-    expect(result).toEqual({ error: "Ce nom d'utilisateur est déjà utilisé." });
-  });
-
-  it("returns an error when the email is taken", async () => {
-    vi.mocked(authService.register).mockResolvedValue("EMAIL_TAKEN");
+  it("returns an error when the sign up is refused", async () => {
+    vi.mocked(authService.register).mockResolvedValue(false);
     const formData = new FormData();
     formData.append("username", "jeandupont");
     formData.append("email", "jean@test.com");
@@ -82,27 +86,26 @@ describe("registerAction", () => {
     const result = await registerAction(undefined, formData);
 
     expect(result).toEqual({
-      error: "Cette adresse e-mail est déjà utilisée.",
-    });
-  });
-
-  it("returns a generic error for any other failure", async () => {
-    vi.mocked(authService.register).mockResolvedValue("UNKNOWN");
-    const formData = new FormData();
-    formData.append("username", "jeandupont");
-    formData.append("email", "jean@test.com");
-    formData.append("password", "Password1!");
-
-    const result = await registerAction(undefined, formData);
-
-    expect(result).toEqual({
-      error: "L'inscription a échoué. Veuillez réessayer.",
+      message: "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé.",
     });
     expect(redirect).not.toHaveBeenCalled();
   });
 
+  it("rethrows technical errors", async () => {
+    vi.mocked(authService.register).mockRejectedValue(new Error("DB down"));
+    const formData = new FormData();
+    formData.append("username", "jeandupont");
+    formData.append("email", "jean@test.com");
+    formData.append("password", "Password1!");
+
+    await expect(registerAction(undefined, formData)).rejects.toThrow(
+      "DB down",
+    );
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
   it("redirects to /posts on successful registration", async () => {
-    vi.mocked(authService.register).mockResolvedValue(null);
+    vi.mocked(authService.register).mockResolvedValue(true);
     const formData = new FormData();
     formData.append("username", "jeandupont");
     formData.append("email", "jean@test.com");

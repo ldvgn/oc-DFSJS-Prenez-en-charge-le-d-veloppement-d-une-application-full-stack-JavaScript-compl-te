@@ -1,17 +1,44 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { postService } from "@/modules/post/post.service";
+import { SortButton } from "./_components/sort-button";
 import { authService } from "@/modules/auth/auth.service";
-import { logoutAction } from "@/modules/auth/auth.actions";
+import { PostCard } from "./_components/post-card";
 
-export default async function Posts() {
-  const user = await authService.getCurrentUser();
-  if (!user) redirect("/login");
+export default async function Posts({ searchParams }: PageProps<"/posts">) {
+  const user = await authService.requireUser();
+
+  const { order: orderParam } = await searchParams;
+  const order = orderParam === "asc" ? "asc" : "desc";
+  const posts = await postService.getFeed(user.id, order);
 
   return (
     <>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-      <form action={logoutAction}>
-        <button type="submit">Se déconnecter</button>
-      </form>
+      <div className="pb-8 flex justify-between items-center">
+        <Button nativeButton={false} render={<Link href="/posts/new" />}>
+          Créer un article
+        </Button>
+
+        <SortButton />
+      </div>
+
+      {posts.length === 0 ? (
+        <p>
+          Aucun article pour le moment.{" "}
+          <Link href="/topics" className="underline">
+            Abonnez-vous à des thèmes
+          </Link>{" "}
+          pour voir leurs articles.
+        </p>
+      ) : (
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+          {posts.map((post) => (
+            <li key={post.id}>
+              <PostCard post={post} />
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }

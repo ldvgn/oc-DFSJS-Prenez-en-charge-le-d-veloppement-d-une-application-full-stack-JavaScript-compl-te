@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { APIError } from "better-auth/api";
+import { redirect } from "next/navigation";
 import { authService } from "./auth.service";
 import { auth } from "@/lib/auth";
 
@@ -14,6 +15,8 @@ vi.mock("@/lib/auth", () => ({
     },
   },
 }));
+
+vi.mock("next/navigation");
 
 vi.mock("next/headers", () => ({
   headers: async () => new Headers(),
@@ -74,14 +77,14 @@ describe("login", () => {
 });
 
 describe("register", () => {
-  it("returns null on successful registration", async () => {
+  it("returns true on successful registration", async () => {
     const result = await authService.register({
       username: "jeandupont",
       email: "jean@test.com",
       password: "Password1!",
     });
 
-    expect(result).toBe(null);
+    expect(result).toBe(true);
     expect(auth.api.signUpEmail).toHaveBeenCalledWith({
       body: {
         name: "jeandupont",
@@ -92,11 +95,9 @@ describe("register", () => {
     });
   });
 
-  it("returns USERNAME_TAKEN when the username is taken", async () => {
+  it("returns false when Better Auth refuses the sign up", async () => {
     vi.mocked(auth.api.signUpEmail).mockRejectedValue(
-      new APIError("UNPROCESSABLE_ENTITY", {
-        code: "USERNAME_IS_ALREADY_TAKEN",
-      }),
+      new APIError("UNPROCESSABLE_ENTITY"),
     );
 
     const result = await authService.register({
@@ -105,37 +106,7 @@ describe("register", () => {
       password: "Password1!",
     });
 
-    expect(result).toBe("USERNAME_TAKEN");
-  });
-
-  it("returns EMAIL_TAKEN when the email is taken", async () => {
-    vi.mocked(auth.api.signUpEmail).mockRejectedValue(
-      new APIError("UNPROCESSABLE_ENTITY", {
-        code: "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL",
-      }),
-    );
-
-    const result = await authService.register({
-      username: "jeandupont",
-      email: "jean@test.com",
-      password: "Password1!",
-    });
-
-    expect(result).toBe("EMAIL_TAKEN");
-  });
-
-  it("returns UNKNOWN for any other better-auth error", async () => {
-    vi.mocked(auth.api.signUpEmail).mockRejectedValue(
-      new APIError("BAD_REQUEST", { code: "AUTRE_ERREUR" }),
-    );
-
-    const result = await authService.register({
-      username: "jeandupont",
-      email: "jean@test.com",
-      password: "Password1!",
-    });
-
-    expect(result).toBe("UNKNOWN");
+    expect(result).toBe(false);
   });
 
   it("rethrows technical errors", async () => {
@@ -163,22 +134,43 @@ describe("logout", () => {
   });
 });
 
-describe("getCurrentUser", () => {
+const session = {
+  session: {
+    id: "session-1",
+    userId: "user-1",
+    token: "token-1",
+    expiresAt: new Date("2026-02-01"),
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+  user: {
+    id: "user-1",
+    name: "alice",
+    username: "alice",
+    email: "alice@test.com",
+    emailVerified: false,
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+};
+
+describe("requireUser", () => {
   it("returns the user when logged in", async () => {
-    vi.mocked(auth.api.getSession).mockResolvedValue({
-      user: { id: "1", name: "jeandupont" },
-    } as never);
+    vi.mocked(auth.api.getSession).mockResolvedValue(session);
 
-    const result = await authService.getCurrentUser();
+    const result = await authService.requireUser();
 
-    expect(result).toEqual({ id: "1", name: "jeandupont" });
+    expect(result).toEqual(session.user);
+    expect(redirect).not.toHaveBeenCalled();
   });
 
-  it("returns null when no one is logged in", async () => {
+  it("redirects to /login when no one is logged in", async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue(null);
+    vi.mocked(redirect).mockImplementation(() => {
+      throw new Error("NEXT_REDIRECT");
+    });
 
-    const result = await authService.getCurrentUser();
-
-    expect(result).toBe(null);
+    await expect(authService.requireUser()).rejects.toThrow("NEXT_REDIRECT");
+    expect(redirect).toHaveBeenCalledWith("/login");
   });
 });

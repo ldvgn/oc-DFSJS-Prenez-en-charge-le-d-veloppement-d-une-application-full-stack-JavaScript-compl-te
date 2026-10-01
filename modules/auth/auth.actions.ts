@@ -1,75 +1,74 @@
 "use server";
 
+import z from "zod";
 import { redirect } from "next/navigation";
-import { loginSchema, registerSchema } from "./auth.schemas";
+import {
+  LoginSchema,
+  LoginState,
+  RegisterSchema,
+  RegisterState,
+} from "./auth.schemas";
 import { authService } from "./auth.service";
 
-/** State returned to the login form. */
-export type LoginState = { error?: string } | undefined;
-
-/** State returned to the registration form. */
-export type RegisterState = { error?: string } | undefined;
-
 /**
- * Authenticates a user by email or username.
+ * Signs in, then redirects to /posts.
  *
- * @param _prevState - Previous state returned by `useActionState` (not used)
- * @param formData - Form data (`identifier`, `password`)
- * @returns An error, or nothing (redirects to /posts)
+ * @param formData - `identifier`, `password`
+ * @returns The errors to display
  */
 export async function loginAction(
-  _prevState: LoginState,
+  _state: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  const parsed = loginSchema.safeParse({
+  const validatedFields = LoginSchema.safeParse({
     identifier: formData.get("identifier"),
     password: formData.get("password"),
   });
 
-  if (!parsed.success) {
-    return { error: "Veuillez remplir tous les champs." };
+  if (!validatedFields.success) {
+    return {
+      errors: z.flattenError(validatedFields.error).fieldErrors,
+    };
   }
 
-  const result = await authService.login(parsed.data);
-  if (!result) return { error: "Identifiants incorrects." };
+  const success = await authService.login(validatedFields.data);
+  if (!success) return { message: "Identifiants incorrects." };
 
   redirect("/posts");
 }
 
 /**
- * Registers a new user, then redirects them to their feed.
+ * Creates an account, then redirects to /posts.
  *
- * @param _prevState - Previous state returned by `useActionState` (not used)
- * @param formData - Form data (`username`, `email`, `password`)
- * @returns An error, or nothing (redirects to /posts)
+ * @param formData - `username`, `email`, `password`
+ * @returns The errors to display
  */
 export async function registerAction(
-  _prevState: RegisterState,
+  _state: RegisterState,
   formData: FormData,
 ): Promise<RegisterState> {
-  const parsed = registerSchema.safeParse({
+  const validatedFields = RegisterSchema.safeParse({
     username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
   });
 
-  if (!parsed.success) {
-    return { error: "Données invalides." };
+  if (!validatedFields.success) {
+    return {
+      errors: z.flattenError(validatedFields.error).fieldErrors,
+    };
   }
 
-  const error = await authService.register(parsed.data);
-  if (error === "USERNAME_TAKEN")
-    return { error: "Ce nom d'utilisateur est déjà utilisé." };
-  if (error === "EMAIL_TAKEN")
-    return { error: "Cette adresse e-mail est déjà utilisée." };
-  if (error) return { error: "L'inscription a échoué. Veuillez réessayer." };
+  const success = await authService.register(validatedFields.data);
+  if (!success)
+    return {
+      message: "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé.",
+    };
 
   redirect("/posts");
 }
 
-/**
- * Logs out the user and then redirects them to the login page.
- */
+/** Signs out, then redirects to the home page. */
 export async function logoutAction(): Promise<void> {
   await authService.logout();
   redirect("/");

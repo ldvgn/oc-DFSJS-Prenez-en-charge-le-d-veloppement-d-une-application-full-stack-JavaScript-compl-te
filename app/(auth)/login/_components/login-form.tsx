@@ -3,8 +3,8 @@
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginInput } from "@/modules/auth/auth.schemas";
-import type { LoginState } from "@/modules/auth/auth.actions";
+import { LoginSchema, type LoginType } from "@/modules/auth/auth.schemas";
+import { loginAction } from "@/modules/auth/auth.actions";
 import {
   Field,
   FieldGroup,
@@ -14,18 +14,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-type LoginFormProps = {
-  action: (prevState: LoginState, formData: FormData) => Promise<LoginState>;
-};
+export default function LoginForm() {
+  const [state, formAction, isPending] = useActionState(loginAction, undefined);
 
-export default function LoginForm({ action }: LoginFormProps) {
-  const [state, formAction, isPending] = useActionState(action, undefined);
-  const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<LoginType>({
+    resolver: zodResolver(LoginSchema),
   });
+
   const { errors } = form.formState;
 
-  function onSubmit(data: LoginInput) {
+  function onSubmit(data: LoginType) {
     const formData = new FormData();
     formData.append("identifier", data.identifier);
     formData.append("password", data.password);
@@ -40,29 +38,27 @@ export default function LoginForm({ action }: LoginFormProps) {
             E-mail ou nom d&apos;utilisateur
           </FieldLabel>
           <Input
+            {...form.register("identifier")}
             id="identifier"
             autoComplete="username"
             aria-invalid={!!errors.identifier}
-            {...form.register("identifier")}
           />
-          <FieldError errors={[errors.identifier]} />
+          {errors.identifier && <FieldError errors={[errors.identifier]} />}
         </Field>
 
         <Field data-invalid={!!errors.password}>
           <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
           <Input
+            {...form.register("password")}
             id="password"
             type="password"
             autoComplete="current-password"
             aria-invalid={!!errors.password}
-            {...form.register("password")}
           />
-          <FieldError errors={[errors.password]} />
+          {errors.password && <FieldError errors={[errors.password]} />}
         </Field>
 
-        <FieldError
-          errors={state?.error ? [{ message: state.error }] : undefined}
-        />
+        {state?.message && <p role="alert">{state.message}</p>}
 
         <Button type="submit" disabled={isPending} className="mx-auto">
           {isPending ? "Connexion…" : "Se connecter"}
