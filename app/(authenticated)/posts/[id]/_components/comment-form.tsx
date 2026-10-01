@@ -12,7 +12,6 @@ import {
   type CommentType,
 } from "@/modules/comment/comment.schemas";
 import { createCommentAction } from "@/modules/comment/comment.actions";
-import { useServerErrors } from "@/hooks/use-server-errors";
 
 export default function CommentForm({ postId }: { postId: string }) {
   const [state, formAction, isPending] = useActionState(
@@ -25,8 +24,6 @@ export default function CommentForm({ postId }: { postId: string }) {
   });
 
   const { errors } = form.formState;
-
-  useServerErrors(form, state?.errors);
 
   // Clear the field after a successful send.
   useEffect(() => {

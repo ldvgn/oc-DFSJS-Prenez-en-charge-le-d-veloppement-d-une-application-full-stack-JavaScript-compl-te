@@ -31,9 +31,9 @@ npm run db:test:down
 ## Architecture
 
 **Layered modules** (`modules/<domain>/`): each domain has
-- `*.schemas.ts`: zod schema + inferred type (`PostSchema` / `PostType`), shared by client form and server action.
-- `*.repository.ts`: only layer that touches `prisma`. Defines `include` objects with `satisfies Prisma.XInclude` and derives payload types via `Prisma.XGetPayload`.
-- `*.service.ts`: business logic over the repository. Mostly classes with the repository injected via constructor default, exported as a singleton (`postService`); `commentService` is a plain object.
+- `*.schemas.ts`: zod schema + inferred type + action state type (`PostSchema` / `PostType` / `PostState`), shared by client form and server action. Also holds the query result types (`PostWithAuthor`, `PostDetail`) written as `Prisma.XGetPayload<{ include: {...} }>` with `import type` only.
+- `*.repository.ts`: only layer that touches `prisma`. `include` / `orderBy` are written inline in each query (no shared `include` constants).
+- `*.service.ts`: business logic over the repository. Classes with the repository injected via constructor default, exported as a singleton (`postService`, `commentService`).
 - `*.actions.ts`: `"use server"` Server Actions.
 
 **Server Action contract** (used by every form):
@@ -41,13 +41,14 @@ npm run db:test:down
 2. `Schema.safeParse(...)` from `FormData`; on failure return `{ errors: z.flattenError(err).fieldErrors }`.
 3. Call the service in `try/catch`; on failure return `{ message: "..." }`.
 4. `redirect()` (outside the try) or `revalidatePath()` on success.
-State type is `{ errors?: {field?: string[]}, message?: string } | undefined`.
+State type (in `*.schemas.ts`) is `{ errors?: {field?: string[]}, message?: string } | undefined`.
 
-**Client forms** (`app/**/_components/*-form.tsx`): `useActionState(action)` + `useForm({ resolver: zodResolver(Schema) })`; native fields (`Input`, `Textarea`, `NativeSelect`) use `form.register(name)` inside shadcn `Field`/`FieldLabel`/`FieldError`, with errors from `form.formState.errors`. Keep `Controller` for non-native components only. No `defaultValues`: uncontrolled inputs keep what was typed before hydration (a controlled reset breaks WebKit e2e). `onSubmit` builds a `FormData` and calls `startTransition(() => formAction(fd))`. `useServerErrors(form, state?.errors)` (`hooks/use-server-errors.ts`) pushes server field errors into RHF; `state.message` is rendered as `{state?.message && <p role="alert">…</p>}`.
+**Client forms** (`app/**/_components/*-form.tsx`): `useActionState(action)` + `useForm({ resolver: zodResolver(Schema) })`; native fields (`Input`, `Textarea`, `NativeSelect`) use `form.register(name)` inside shadcn `Field`/`FieldLabel`/`FieldError`, with errors from `form.formState.errors`. Keep `Controller` for non-native components only. No `defaultValues`: uncontrolled inputs keep what was typed before hydration (a controlled reset breaks WebKit e2e). `onSubmit` builds a `FormData` and calls `startTransition(() => formAction(fd))`. Field errors come from the client zod resolver only (the action re-validates with the same schema for security); `state.message` is rendered as `{state?.message && <p role="alert">…</p>}`.
 
 **Auth**:
 - `lib/auth.ts`: Better Auth config; `nextCookies()` plugin sets cookies from Server Actions.
-- `proxy.ts` (Next 16's replacement for `middleware.ts`): `/`, `/login`, `/register` redirect logged-in users to `/posts`; other routes only check the session cookie exists (optimistic).
+- `proxy.ts` (Next 16's replacement for `middleware.ts`): follows the Better Auth Next.js doc; full `auth.api.getSession` on `/posts`, `/topics`, `/profile` (matcher), redirects to `/login` without a session.
+- `/`, `/login`, `/register` pages call `auth.api.getSession` themselves and redirect logged-in users to `/posts`.
 - Real session validation happens in pages/actions via `authService.requireUser()`, which must be called at the top of every protected page and Server Action.
 - `app/api/auth/[...all]/route.ts` mounts the Better Auth handler.
 
@@ -62,6 +63,15 @@ State type is `{ errors?: {field?: string[]}, message?: string } | undefined`.
 
 ## Conventions
 
-- JSDoc on every repository/service/action method (`@param`, `@returns`).
+- JSDoc on every repository/service/action method, kept minimal like `modules/auth`: a one-line summary (ends with `.`), then `@param name - Short phrase` and `@returns Short phrase` without trailing `.`. No filler ("Validated", "The post's", "for the given author"), no multi-line descriptions. Actions don't document `_state`; `@param formData` lists the fields (`` `topicId`, `title` ``), `@returns The errors to display`.
+  ```ts
+  /**
+   * Creates a post.
+   *
+   * @param input - Post form data
+   * @param authorId - Author ID
+   * @returns The created post
+   */
+  ```
 - Use straight apostrophes in UI strings (`'`, `&apos;` in JSX), not `’`.
 - Commits follow Conventional Commits with scope (`feat(posts): ...`, `refactor(forms): ...`).

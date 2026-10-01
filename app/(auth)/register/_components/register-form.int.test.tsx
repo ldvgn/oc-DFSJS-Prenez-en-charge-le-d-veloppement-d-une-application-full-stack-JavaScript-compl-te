@@ -22,7 +22,7 @@ describe("RegisterForm", () => {
 
   it("shows the error returned by the action", async () => {
     vi.mocked(registerAction).mockResolvedValueOnce({
-      errors: { email: ["Cette adresse e-mail est déjà utilisée."] },
+      message: "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé.",
     });
     render(<RegisterForm />);
 
@@ -35,8 +35,8 @@ describe("RegisterForm", () => {
     await userEvent.click(screen.getByRole("button", { name: "S'inscrire" }));
 
     expect(registerAction).toHaveBeenCalledOnce();
-    expect(
-      await screen.findByText("Cette adresse e-mail est déjà utilisée."),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé.",
+    );
   });
 });

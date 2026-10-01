@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
-import { type Comment, Prisma } from "@/prisma/generated/prisma/client";
+import { Prisma, type Comment } from "@/prisma/generated/prisma/client";
 
 export class CommentRepository {
   /**
-   * Inserts a comment in the database.
+   * Creates a comment.
    *
-   * @param data Comment fields, including postId and authorId
-   * @returns The created comment
+   * @param data - The comment data, its post's ID and its author's ID
+   * @returns The created comment.
    */
-  create(data: Prisma.CommentUncheckedCreateInput): Promise<Comment> {
+  async create(data: Prisma.CommentUncheckedCreateInput): Promise<Comment> {
     return prisma.comment.create({ data });
   }
 }

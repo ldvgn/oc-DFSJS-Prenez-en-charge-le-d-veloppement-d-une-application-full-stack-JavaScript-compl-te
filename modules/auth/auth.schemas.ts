@@ -28,3 +28,24 @@ export const LoginSchema = z.object({
 
 export type RegisterType = z.infer<typeof RegisterSchema>;
 export type LoginType = z.infer<typeof LoginSchema>;
+
+export type LoginState =
+  | {
+      errors?: {
+        identifier?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
+
+export type RegisterState =
+  | {
+      errors?: {
+        username?: string[];
+        email?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
+  | undefined;

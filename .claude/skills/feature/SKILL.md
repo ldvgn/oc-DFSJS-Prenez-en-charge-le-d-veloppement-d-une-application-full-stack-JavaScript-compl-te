@@ -27,11 +27,11 @@ Do not write any code before I approve.
 
 In small steps, from data to UI, following CLAUDE.md:
 - Migration: `npm run db:migrate -- --name <name>` (regenerates the client).
-- Repository: the only layer touching `prisma`; `include` with `satisfies Prisma.XInclude`, types via `Prisma.XGetPayload`.
+- Repository: the only layer touching `prisma`; `include` / `orderBy` inline in each query (no shared constants). Payload types via `Prisma.XGetPayload` in `*.schemas.ts` (`import type` only).
 - Server Action: `authService.requireUser()` → `safeParse` → service in `try/catch` → `redirect()` outside the try, or `revalidatePath()`.
-- Form: `useActionState` + RHF `form.register` on native fields (no `defaultValues`) + shadcn `Field`, `useServerErrors`, message in a `role="alert"` element.
+- Form: `useActionState` + RHF `form.register` on native fields (no `defaultValues`) + shadcn `Field`, message in a `role="alert"` element.
 - Protected page: `authService.requireUser()` first, `PageProps<"/route">`.
-- JSDoc on every repository / service / action method. UI text in French, straight apostrophes (`'`, `&apos;` in JSX).
+- JSDoc on every repository / service / action method, one line as in CLAUDE.md. UI text in French, straight apostrophes (`'`, `&apos;` in JSX).
 
 ## 4. Test
 

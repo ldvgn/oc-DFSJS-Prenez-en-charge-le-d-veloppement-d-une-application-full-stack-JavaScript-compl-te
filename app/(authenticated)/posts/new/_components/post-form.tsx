@@ -19,7 +19,6 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Button } from "@/components/ui/button";
-import { useServerErrors } from "@/hooks/use-server-errors";
 
 export default function PostForm({ topics }: { topics: Topic[] }) {
   const [state, formAction, isPending] = useActionState(
@@ -32,8 +31,6 @@ export default function PostForm({ topics }: { topics: Topic[] }) {
   });
 
   const { errors } = form.formState;
-
-  useServerErrors(form, state?.errors);
 
   function onSubmit(data: PostType) {
     const formData = new FormData();

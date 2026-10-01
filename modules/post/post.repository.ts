@@ -1,28 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma, type Post } from "@/prisma/generated/prisma/client";
-
-const postWithAuthorInclude = {
-  author: { select: { username: true } },
-} satisfies Prisma.PostInclude;
-
-const postDetailInclude = {
-  author: { select: { username: true } },
-  topic: true,
-  comments: {
-    include: { author: { select: { username: true } } },
-    orderBy: { createdAt: "asc" },
-  },
-} satisfies Prisma.PostInclude;
-
-export type PostWithAuthor = Prisma.PostGetPayload<{
-  include: typeof postWithAuthorInclude;
-}>;
-
-export type PostDetail = Prisma.PostGetPayload<{
-  include: typeof postDetailInclude;
-}>;
-
-export type SortOrder = Prisma.SortOrder;
+import type { PostDetail, PostWithAuthor, SortOrder } from "./post.schemas";
 
 export class PostRepository {
   /**
@@ -33,7 +11,9 @@ export class PostRepository {
    */
   async findAll(order: SortOrder = "desc"): Promise<PostWithAuthor[]> {
     return prisma.post.findMany({
-      include: postWithAuthorInclude,
+      include: {
+        author: { select: { username: true } },
+      },
       orderBy: { createdAt: order },
     });
   }
@@ -47,7 +27,14 @@ export class PostRepository {
   async findById(id: string): Promise<PostDetail | null> {
     return prisma.post.findUnique({
       where: { id },
-      include: postDetailInclude,
+      include: {
+        author: { select: { username: true } },
+        topic: true,
+        comments: {
+          include: { author: { select: { username: true } } },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
   }
 

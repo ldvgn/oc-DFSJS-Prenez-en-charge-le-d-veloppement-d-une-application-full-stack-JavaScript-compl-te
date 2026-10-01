@@ -33,14 +33,14 @@ Read `CLAUDE.md`, then every changed file in full (not just the hunk) and the re
 
 **Architecture**
 - `prisma` used only in `*.repository.ts`, imported from `@/prisma/generated/prisma/client`.
-- `include` with `satisfies Prisma.XInclude`, types via `Prisma.XGetPayload`.
+- `include` / `orderBy` written inline in each query (no shared `include` constants); payload types via `Prisma.XGetPayload` in `*.schemas.ts` (`import type` only).
 - Action contract: `requireUser` → `safeParse` → `{ errors }` → service in `try/catch` → `{ message }` → `redirect`/`revalidatePath`.
-- Forms: `useActionState` + `form.register` on native fields (`Controller` only for non-native components, no `defaultValues`) + `Field`/`FieldError`, `useServerErrors`, message in `role="alert"`.
+- Forms: `useActionState` + `form.register` on native fields (`Controller` only for non-native components, no `defaultValues`) + `Field`/`FieldError`, message in `role="alert"`.
 - Route components in `_components/`, `PageProps<"/route">`.
 - Prisma migration present if `schema.prisma` changed.
 
 **Quality and conventions**
-- JSDoc (`@param`, `@returns`) on every repository / service / action method.
+- JSDoc on every repository / service / action method, minimal as in CLAUDE.md (one-line summary, short `@param` / `@returns`, no filler).
 - UI text in French, straight apostrophes (`'`, `&apos;` in JSX).
 - No dead code, `console.log`, `any` or unjustified `eslint-disable`.
 - Accessibility: labels bound to inputs, named buttons.

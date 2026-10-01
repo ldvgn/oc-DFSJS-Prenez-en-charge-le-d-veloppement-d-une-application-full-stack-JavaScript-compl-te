@@ -3,44 +3,39 @@
 import z from "zod";
 import { redirect } from "next/navigation";
 import { authService } from "@/modules/auth/auth.service";
-import { PostSchema } from "./post.schemas";
+import { PostSchema, PostState } from "./post.schemas";
 import { postService } from "./post.service";
 
-export type PostState =
-  | {
-      errors?: { topicId?: string[]; title?: string[]; content?: string[] };
-      message?: string;
-    }
-  | undefined;
-
 /**
- * Creates a post for the current user, then redirects to it.
+ * Creates a post, then redirects to it.
  *
- * @param _prevState - Previous `useActionState` state (unused)
  * @param formData - `topicId`, `title`, `content`
- * @returns Field errors or a message, or redirects to the post
+ * @returns The errors to display
  */
 export async function createPostAction(
-  _prevState: PostState,
+  _state: PostState,
   formData: FormData,
 ): Promise<PostState> {
   const user = await authService.requireUser();
 
-  const parsed = PostSchema.safeParse({
+  const validatedFields = PostSchema.safeParse({
     topicId: formData.get("topicId"),
     title: formData.get("title"),
     content: formData.get("content"),
   });
 
-  if (!parsed.success) {
-    return { errors: z.flattenError(parsed.error).fieldErrors };
+  if (!validatedFields.success) {
+    return {
+      errors: z.flattenError(validatedFields.error).fieldErrors,
+    };
   }
 
   let post;
   try {
-    post = await postService.create(parsed.data, user.id);
+    post = await postService.create(validatedFields.data, user.id);
   } catch {
     return { message: "Impossible de créer l'article." };
   }
+
   redirect(`/posts/${post.id}`);
 }

@@ -1,15 +1,27 @@
-import { commentRepository } from "./comment.repository";
-import type { CommentType } from "./comment.schemas";
+import { type Comment } from "@/prisma/generated/prisma/client";
+import { CommentRepository, commentRepository } from "./comment.repository";
+import { type CommentType } from "./comment.schemas";
 
-export const commentService = {
+export class CommentService {
+  constructor(
+    private readonly repository: CommentRepository = commentRepository,
+  ) {}
+
   /**
    * Creates a comment on a post.
    *
-   * @param data Validated comment content
-   * @param postId Id of the commented post
-   * @param authorId Id of the comment author
+   * @param input - Comment form data
+   * @param postId - Post ID
+   * @param authorId - Author ID
    * @returns The created comment
    */
-  create: (data: CommentType, postId: string, authorId: string) =>
-    commentRepository.create({ ...data, postId, authorId }),
-};
+  async create(
+    input: CommentType,
+    postId: string,
+    authorId: string,
+  ): Promise<Comment> {
+    return this.repository.create({ ...input, postId, authorId });
+  }
+}
+
+export const commentService = new CommentService();

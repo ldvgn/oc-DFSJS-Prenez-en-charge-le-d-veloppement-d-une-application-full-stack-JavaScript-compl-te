@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useServerErrors } from "@/hooks/use-server-errors";
 
 export default function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, undefined);
@@ -23,8 +22,6 @@ export default function LoginForm() {
   });
 
   const { errors } = form.formState;
-
-  useServerErrors(form, state?.errors);
 
   function onSubmit(data: LoginType) {
     const formData = new FormData();

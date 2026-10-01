@@ -3,42 +3,34 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/modules/auth/auth.service";
-import { CreateCommentSchema } from "./comment.schemas";
+import { CommentState, CreateCommentSchema } from "./comment.schemas";
 import { commentService } from "./comment.service";
 
-export type CommentState =
-  | {
-      errors?: { content?: string[] };
-      message?: string;
-    }
-  | undefined;
-
 /**
- * Adds a comment from the current user to a post, then refreshes the post page.
+ * Adds a comment, then refreshes the post page.
  *
- * @param _prevState - Previous `useActionState` state (unused)
  * @param formData - `postId`, `content`
- * @returns Field errors or a message, or nothing on success
+ * @returns The errors to display
  */
 export async function createCommentAction(
-  _prevState: CommentState,
+  _state: CommentState,
   formData: FormData,
 ): Promise<CommentState> {
   const user = await authService.requireUser();
 
-  const parsed = CreateCommentSchema.safeParse({
+  const validatedFields = CreateCommentSchema.safeParse({
     content: formData.get("content"),
     postId: formData.get("postId"),
   });
 
-  if (!parsed.success) {
-    const { content } = z.flattenError(parsed.error).fieldErrors;
+  if (!validatedFields.success) {
+    const { content } = z.flattenError(validatedFields.error).fieldErrors;
     return content
       ? { errors: { content } }
       : { message: "Article introuvable." };
   }
 
-  const { postId, ...comment } = parsed.data;
+  const { postId, ...comment } = validatedFields.data;
 
   try {
     await commentService.create(comment, postId, user.id);

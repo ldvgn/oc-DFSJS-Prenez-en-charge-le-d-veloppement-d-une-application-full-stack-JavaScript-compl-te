@@ -1,10 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import Register from "./page";
 
+vi.mock("next/headers", () => ({ headers: vi.fn() }));
+vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
+vi.mock("@/lib/auth", () => ({ auth: { api: { getSession: vi.fn() } } }));
+
 describe("Register page", () => {
-  it("renders the header and the register form", () => {
-    render(<Register />);
+  it("renders the header and the register form", async () => {
+    render(await Register());
 
     expect(
       screen.getByRole("heading", { name: "Inscription" }),
@@ -12,5 +18,13 @@ describe("Register page", () => {
     expect(
       screen.getByRole("button", { name: "S'inscrire" }),
     ).toBeInTheDocument();
+  });
+
+  it("redirects a logged-in user to /posts", async () => {
+    vi.mocked(auth.api.getSession).mockResolvedValue({} as never);
+
+    await Register();
+
+    expect(redirect).toHaveBeenCalledWith("/posts");
   });
 });

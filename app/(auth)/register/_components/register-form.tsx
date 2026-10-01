@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useServerErrors } from "@/hooks/use-server-errors";
 
 export default function RegisterForm() {
   const [state, formAction, isPending] = useActionState(
@@ -26,8 +25,6 @@ export default function RegisterForm() {
   });
 
   const { errors } = form.formState;
-
-  useServerErrors(form, state?.errors);
 
   function onSubmit(data: RegisterType) {
     const formData = new FormData();
