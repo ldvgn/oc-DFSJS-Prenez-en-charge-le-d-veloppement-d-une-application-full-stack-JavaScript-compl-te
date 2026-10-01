@@ -5,8 +5,8 @@ export class CommentRepository {
   /**
    * Creates a comment.
    *
-   * @param data - The comment data, its post's ID and its author's ID
-   * @returns The created comment.
+   * @param data - Comment data with post and author IDs
+   * @returns The created comment
    */
   async create(data: Prisma.CommentUncheckedCreateInput): Promise<Comment> {
     return prisma.comment.create({ data });

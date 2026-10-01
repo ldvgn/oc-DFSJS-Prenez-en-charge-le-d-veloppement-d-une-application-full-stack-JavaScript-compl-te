@@ -26,8 +26,8 @@ export class PostRepository {
   /**
    * Returns a single post with its author's username, topic and comments.
    *
-   * @param id - The post's ID
-   * @returns The post, or `null` if not found.
+   * @param id - Post ID
+   * @returns The post, or `null` if not found
    */
   async findById(id: string): Promise<PostDetail | null> {
     return prisma.post.findUnique({
@@ -46,8 +46,8 @@ export class PostRepository {
   /**
    * Creates a post.
    *
-   * @param data - The post data and its author's ID
-   * @returns The created post.
+   * @param data - Post data with author ID
+   * @returns The created post
    */
   async create(data: Prisma.PostUncheckedCreateInput): Promise<Post> {
     return prisma.post.create({ data });

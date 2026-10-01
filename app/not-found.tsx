@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -13,9 +13,9 @@ export default function NotFound() {
             Désolé, nous n&apos;avons pas trouvé la page que vous recherchez.
           </p>
         </div>
-        <Button nativeButton={false} render={<Link href="/" />}>
+        <Link href="/" className={buttonVariants()}>
           Retour à l&apos;accueil
-        </Button>
+        </Link>
       </div>
     </main>
   );

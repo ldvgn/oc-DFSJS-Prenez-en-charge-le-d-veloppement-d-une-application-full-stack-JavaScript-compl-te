@@ -46,7 +46,7 @@ Read `CLAUDE.md`, then every changed file in full (not just the hunk) and the re
 - Accessibility: labels bound to inputs, named buttons.
 
 **Tests**
-- Every new or changed action, service and form has a colocated test.
+- Every new or changed repository, service, action and form has a colocated test.
 - Error cases are covered, not just the happy path.
 - No weakened assertion or disabled test (`.skip`, `.only`).
 

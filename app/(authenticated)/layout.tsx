@@ -1,6 +1,6 @@
 import AppHeader from "./_components/app-header";
 
-export default function AuthLayout({ children }: LayoutProps<"/">) {
+export default function AuthenticatedLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <AppHeader />

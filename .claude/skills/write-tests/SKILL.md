@@ -10,14 +10,15 @@ Target: $ARGUMENTS (defaults to the files changed in `git diff main...HEAD` and 
 
 | File under test | Test | Environment |
 |---|---|---|
-| `*.service.ts`, `*.actions.ts`, `lib/*` | `<file>.test.ts` (unit) | node |
+| `*.repository.ts`, `*.service.ts`, `*.actions.ts`, `lib/*` | `<file>.test.ts` (unit) | node |
 | component, `_components/*-form.tsx`, `page.tsx`, `layout.tsx` | `<file>.int.test.tsx` (integration) | jsdom |
 | full user flow | `tests/e2e/<domain>.spec.ts` | Playwright + test DB |
 
-Tests are colocated with the file under test. Repositories are not unit tested: e2e covers them.
+Tests are colocated with the file under test.
 
 Before writing, read an existing test of the same type as a model:
 - unit action: `modules/auth/auth.actions.test.ts`
+- unit repository: `modules/post/post.repository.test.ts`
 - unit service: `modules/auth/auth.service.test.ts`
 - integration form: `app/(auth)/login/_components/login-form.int.test.tsx`
 - e2e: `tests/e2e/auth.spec.ts`
@@ -27,6 +28,8 @@ Before writing, read an existing test of the same type as a model:
 - Explicit imports: `import { describe, it, expect, vi } from "vitest"`.
 - Test names in English, third person: `it("returns an error when ...")`, `it("redirects to /posts on ...")`.
 - Arrange / Act / Assert separated by blank lines.
+- Each `it` is self-contained: write its interactions inline, no shared step helpers (`fillForm()`, `login()`), even if repetitive. Only plain fixture data (`const topics = [...]`) may be shared.
+- No type casts (`as never`, `as any`, `as unknown as`): fixtures are fully typed, with every field the type expects.
 - No cleanup `afterEach`: `tests/setup.ts` already runs `cleanup()` and `vi.clearAllMocks()`.
 - Expected UI strings are in French, with straight apostrophes.
 
@@ -44,6 +47,18 @@ Cover for each action:
 2. service error → `{ message: "..." }`, no `redirect`;
 3. success → service called with the right data, then `redirect(...)` or `revalidatePath(...)`;
 4. `authService.requireUser` called (protected action).
+
+### Unit: repository
+
+Mock `@/lib/prisma` with a factory listing the model methods used:
+
+```ts
+vi.mock("@/lib/prisma", () => ({
+  prisma: { post: { findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn() } },
+}));
+```
+
+For each method: assert the full Prisma call (`where`, `include`, `orderBy`, default parameters) and that the result is returned as is (`toBe`), plus the `null` case for `findUnique`. These tests check the query shape only; e2e checks it against a real DB.
 
 ### Unit: service
 

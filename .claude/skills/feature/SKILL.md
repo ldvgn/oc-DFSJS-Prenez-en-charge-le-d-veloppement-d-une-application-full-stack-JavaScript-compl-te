@@ -36,7 +36,7 @@ In small steps, from data to UI, following CLAUDE.md:
 ## 4. Test
 
 Use the `write-tests` skill to write colocated tests:
-- `*.test.ts` (unit) for services and actions, collaborators mocked with `vi.mock`.
+- `*.test.ts` (unit) for repositories (`@/lib/prisma` mocked), services and actions, collaborators mocked with `vi.mock`.
 - `*.int.test.tsx` (integration) for forms, action mocked.
 - `tests/e2e/*.spec.ts` if the user flow changes.
 

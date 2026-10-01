@@ -5,7 +5,7 @@ export class TopicRepository {
   /**
    * Returns all topics sorted by name.
    *
-   * @returns All topics.
+   * @returns All topics
    */
   async findAll(): Promise<Topic[]> {
     return prisma.topic.findMany({ orderBy: { name: "asc" } });

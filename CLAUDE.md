@@ -57,9 +57,11 @@ State type (in `*.schemas.ts`) is `{ errors?: {field?: string[]}, message?: stri
 ## Testing conventions
 
 - Tests are colocated with the file under test (VS Code file nesting groups them).
-- Unit tests mock collaborators with `vi.mock("./auth.service")` / `vi.mock("next/navigation")` and assert on `vi.mocked(...)`. `tests/setup.ts` runs `cleanup()` and `vi.clearAllMocks()` after each test.
+- Unit tests mock collaborators with `vi.mock("./auth.service")` / `vi.mock("next/navigation")` and assert on `vi.mocked(...)`. Repository tests mock `@/lib/prisma` with a factory (`vi.mock("@/lib/prisma", () => ({ prisma: { post: { findMany: vi.fn() } } }))`) and assert on the full Prisma call. `tests/setup.ts` runs `cleanup()` and `vi.clearAllMocks()` after each test.
 - Integration tests render components with Testing Library + `userEvent`, mocking the Server Action module (`vi.mock("@/modules/auth/auth.actions", () => ({ loginAction: vi.fn() }))`).
 - Vitest and Playwright need no DB except e2e.
+- No type casts in tests (`as never`, `as any`): fixtures list every field the type expects.
+- Each test is self-contained: interactions are written inline, no shared step helpers (`fillForm()`); only fixture data may be shared.
 
 ## Conventions
 

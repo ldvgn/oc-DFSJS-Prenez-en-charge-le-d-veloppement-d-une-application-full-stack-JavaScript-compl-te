@@ -134,15 +134,33 @@ describe("logout", () => {
   });
 });
 
+const session = {
+  session: {
+    id: "session-1",
+    userId: "user-1",
+    token: "token-1",
+    expiresAt: new Date("2026-02-01"),
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+  user: {
+    id: "user-1",
+    name: "alice",
+    username: "alice",
+    email: "alice@test.com",
+    emailVerified: false,
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+};
+
 describe("requireUser", () => {
   it("returns the user when logged in", async () => {
-    vi.mocked(auth.api.getSession).mockResolvedValue({
-      user: { id: "1", name: "jeandupont" },
-    } as never);
+    vi.mocked(auth.api.getSession).mockResolvedValue(session);
 
     const result = await authService.requireUser();
 
-    expect(result).toEqual({ id: "1", name: "jeandupont" });
+    expect(result).toEqual(session.user);
     expect(redirect).not.toHaveBeenCalled();
   });
 

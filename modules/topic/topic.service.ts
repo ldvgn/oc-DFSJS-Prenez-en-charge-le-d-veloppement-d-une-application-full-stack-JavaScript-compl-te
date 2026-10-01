@@ -7,7 +7,7 @@ export class TopicService {
   /**
    * Returns all topics sorted by name.
    *
-   * @returns All topics.
+   * @returns All topics
    */
   async getAll(): Promise<Topic[]> {
     return this.repository.findAll();

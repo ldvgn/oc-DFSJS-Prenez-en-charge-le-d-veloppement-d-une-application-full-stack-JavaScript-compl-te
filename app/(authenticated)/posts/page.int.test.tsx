@@ -15,19 +15,27 @@ vi.mock("@/modules/post/post.service", () => ({
   postService: { getFeed: vi.fn() },
 }));
 
+const user = {
+  id: "user-1",
+  name: "alice",
+  username: "alice",
+  email: "alice@test.com",
+  emailVerified: false,
+  createdAt: new Date("2026-01-01"),
+  updatedAt: new Date("2026-01-01"),
+};
+
 const renderPage = async (order?: string) =>
   render(
     await Page({
       params: Promise.resolve({}),
       searchParams: Promise.resolve({ order }),
-    } as PageProps<"/posts">),
+    }),
   );
 
 describe("Posts page", () => {
   it("loads the feed of the logged-in user", async () => {
-    vi.mocked(authService.requireUser).mockResolvedValue({
-      id: "user-1",
-    } as never);
+    vi.mocked(authService.requireUser).mockResolvedValue(user);
     vi.mocked(postService.getFeed).mockResolvedValue([
       {
         id: "post-1",
@@ -49,9 +57,7 @@ describe("Posts page", () => {
   });
 
   it("invites the user to follow topics when the feed is empty", async () => {
-    vi.mocked(authService.requireUser).mockResolvedValue({
-      id: "user-1",
-    } as never);
+    vi.mocked(authService.requireUser).mockResolvedValue(user);
     vi.mocked(postService.getFeed).mockResolvedValue([]);
 
     await renderPage();
