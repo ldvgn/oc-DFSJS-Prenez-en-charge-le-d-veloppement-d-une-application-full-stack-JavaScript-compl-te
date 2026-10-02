@@ -33,7 +33,6 @@ export default defineConfig({
         "prisma/generated/**",
         "components/ui/**",
         "**/*.d.ts",
-        "app/api/auth/**",
       ],
     },
   },
