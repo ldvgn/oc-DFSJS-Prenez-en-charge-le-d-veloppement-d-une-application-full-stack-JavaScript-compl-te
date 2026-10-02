@@ -29,15 +29,17 @@ const session = {
 };
 
 describe("Home page", () => {
-  it("shows login and register buttons", async () => {
+  it("shows login and register links", async () => {
     render(await Page());
 
-    expect(
-      screen.getByRole("button", { name: "Se connecter" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "S'inscrire" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Se connecter" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
+    expect(screen.getByRole("link", { name: "S'inscrire" })).toHaveAttribute(
+      "href",
+      "/register",
+    );
   });
 
   it("redirects a logged-in user to /posts", async () => {

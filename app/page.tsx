@@ -2,7 +2,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { cn } from "cn";
+import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
 
 export default async function Home() {
@@ -19,20 +20,18 @@ export default async function Home() {
       <Logo size="lg" />
 
       <div className="flex flex-col gap-8 sm:flex-row">
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/login" />}
+        <Link
+          href="/login"
+          className={cn(buttonVariants({ variant: "outline" }))}
         >
           Se connecter
-        </Button>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/register" />}
+        </Link>
+        <Link
+          href="/register"
+          className={cn(buttonVariants({ variant: "outline" }))}
         >
           S&apos;inscrire
-        </Button>
+        </Link>
       </div>
     </main>
   );

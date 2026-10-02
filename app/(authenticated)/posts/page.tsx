@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { postService } from "@/modules/post/post.service";
 import { SortButton } from "./_components/sort-button";
 import { authService } from "@/modules/auth/auth.service";
@@ -17,9 +17,9 @@ export default async function Posts({ searchParams }: PageProps<"/posts">) {
       <h1 className="sr-only">Fil d&apos;actualité</h1>
 
       <div className="pb-8 flex justify-between items-center">
-        <Button nativeButton={false} render={<Link href="/posts/new" />}>
+        <Link href="/posts/new" className={buttonVariants()}>
           Créer un article
-        </Button>
+        </Link>
 
         <SortButton />
       </div>
