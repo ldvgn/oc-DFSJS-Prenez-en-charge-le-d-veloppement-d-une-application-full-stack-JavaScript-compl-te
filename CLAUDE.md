@@ -45,6 +45,8 @@ State type (in `*.schemas.ts`) is `{ errors?: {field?: string[]}, message?: stri
 
 **Client forms** (`app/**/_components/*-form.tsx`): `useActionState(action)` + `useForm({ resolver: zodResolver(Schema) })`; native fields (`Input`, `Textarea`, `NativeSelect`) use `form.register(name)` inside shadcn `Field`/`FieldLabel`/`FieldError`, with errors from `form.formState.errors`. Keep `Controller` for non-native components only. No `defaultValues`: uncontrolled inputs keep what was typed before hydration (a controlled reset breaks WebKit e2e). `onSubmit` builds a `FormData` and calls `startTransition(() => formAction(fd))`. Field errors come from the client zod resolver only (the action re-validates with the same schema for security); `state.message` is rendered as `{state?.message && <p role="alert">…</p>}`.
 
+**Action buttons** (no user-typed field, e.g. `subscribe-button.tsx`): `<form action={formAction}>` with `useActionState` and hidden inputs, no `useForm`/zod resolver. The state is `{ message?: string } | undefined` (no `errors`, nothing to show next to a field): the action returns `{ message }` on validation failure too. Do not copy this pattern into forms with real fields.
+
 **Auth**:
 - `lib/auth.ts`: Better Auth config; `nextCookies()` plugin sets cookies from Server Actions.
 - `proxy.ts` (Next 16's replacement for `middleware.ts`): follows the Better Auth Next.js doc; full `auth.api.getSession` on `/posts`, `/topics`, `/profile` (matcher), redirects to `/login` without a session.
