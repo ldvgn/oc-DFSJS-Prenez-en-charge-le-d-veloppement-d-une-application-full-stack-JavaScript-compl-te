@@ -14,6 +14,8 @@ export default async function Posts({ searchParams }: PageProps<"/posts">) {
 
   return (
     <>
+      <h1 className="sr-only">Fil d&apos;actualité</h1>
+
       <div className="pb-8 flex justify-between items-center">
         <Button nativeButton={false} render={<Link href="/posts/new" />}>
           Créer un article
