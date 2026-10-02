@@ -10,6 +10,5 @@ export const auth = betterAuth({
   user: {
     changeEmail: { enabled: true },
   },
-  disabledPaths: ["/is-username-available"],
   plugins: [username({ displayUsername: false }), nextCookies()],
 });
