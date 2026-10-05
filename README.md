@@ -122,6 +122,32 @@ E2E tests run against an **isolated test database** (`postgres_test` service in 
 
 `npm run test:e2e` starts the test container, then Playwright resets and seeds the test database ([global-setup.ts](tests/e2e/global-setup.ts)), builds the app and serves it on `http://localhost:3001`. Stop the container afterwards with `npm run db:test:down`.
 
+## Code quality (SonarQube)
+
+Local analysis, run on demand (no CI).
+
+1. Start the server (`sonar` Docker Compose profile), then open [http://localhost:9000](http://localhost:9000):
+
+   ```bash
+   npm run sonar:up
+   ```
+
+2. First time only: log in with `admin` / `admin` and change the password, create a local project with the key `oc-monde-du-dev`, then generate a token (My Account > Security) and add it to `.env`:
+
+   ```env
+   SONAR_TOKEN=
+   ```
+
+3. Generate the coverage reports, then run the analysis:
+
+   ```bash
+   npm run test:coverage       # coverage/unit/lcov.info
+   npm run test:e2e:coverage   # coverage/e2e/lcov.info (optional)
+   npm run sonar
+   ```
+
+4. Stop the server with `npm run sonar:down`.
+
 ## Project organization in VS Code
 
 The repository ships a shared [.vscode/settings.json](.vscode/settings.json) that enables **file nesting** in the Explorer to keep the tree readable:
