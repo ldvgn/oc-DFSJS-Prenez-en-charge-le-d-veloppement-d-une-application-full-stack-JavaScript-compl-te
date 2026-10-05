@@ -22,11 +22,13 @@ npm run test:coverage
 
 npm run test:e2e              # starts postgres_test (port 5433), then Playwright
 npx playwright test tests/e2e/auth.spec.ts --project=chromium
+npm run test:e2e:coverage     # e2e on Chromium + front-end coverage per file in coverage/e2e
 npm run db:test:down
 ```
 
 - Prisma config is in `prisma7.config.ts` (schema path, migrations, seed command). The client is generated to `prisma/generated/prisma` (git-ignored) and imported from `@/prisma/generated/prisma/client`, not `@prisma/client`. Run `npx prisma generate` if imports fail.
 - E2E uses `.env.test` and a RAM-backed DB; `tests/e2e/global-setup.ts` runs `prisma migrate reset --force` + seed, and Playwright builds and serves the app on port 3001 (`reuseExistingServer` locally, so a stale server on 3001 will be reused).
+- E2E coverage (`E2E_COVERAGE=1`, Monocart): front-end only, Chromium. `next.config.ts` emits browser source maps; the `page` fixture in `tests/e2e/fixtures.ts` records V8 coverage over CDP and takes a snapshot before each `page.goto` (a full navigation drops the previous document's scripts; client-side navigations don't); `global-setup.ts` returns the teardown that generates the report. Specs import `test`/`expect` from `./fixtures`, not `@playwright/test`.
 
 ## Architecture
 
