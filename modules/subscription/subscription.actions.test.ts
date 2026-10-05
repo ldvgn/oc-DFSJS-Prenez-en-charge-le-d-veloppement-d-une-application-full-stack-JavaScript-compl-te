@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { revalidatePath } from "next/cache";
-import { subscribeAction } from "./subscription.actions";
+import { subscribeAction, unsubscribeAction } from "./subscription.actions";
 import { subscriptionService } from "./subscription.service";
 import { authService } from "@/modules/auth/auth.service";
 
@@ -89,6 +89,65 @@ describe("subscribeAction", () => {
       "user-1",
     );
     expect(revalidatePath).toHaveBeenCalledWith("/topics");
+    expect(result).toBeUndefined();
+  });
+});
+
+describe("unsubscribeAction", () => {
+  it("requires a logged-in user", async () => {
+    vi.mocked(authService.requireUser).mockRejectedValue(
+      new Error("NEXT_REDIRECT"),
+    );
+    const formData = new FormData();
+    formData.append("topicId", "topic-1");
+
+    await expect(unsubscribeAction(undefined, formData)).rejects.toThrow(
+      "NEXT_REDIRECT",
+    );
+    expect(subscriptionService.unsubscribe).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the topic ID is missing", async () => {
+    vi.mocked(authService.requireUser).mockResolvedValue(user);
+    const formData = new FormData();
+    formData.append("topicId", "");
+
+    const result = await unsubscribeAction(undefined, formData);
+
+    expect(result).toEqual({ message: "Thème introuvable." });
+    expect(subscriptionService.unsubscribe).not.toHaveBeenCalled();
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the service fails", async () => {
+    vi.mocked(authService.requireUser).mockResolvedValue(user);
+    vi.mocked(subscriptionService.unsubscribe).mockRejectedValue(
+      new Error("DB down"),
+    );
+    const formData = new FormData();
+    formData.append("topicId", "topic-1");
+
+    const result = await unsubscribeAction(undefined, formData);
+
+    expect(result).toEqual({
+      message: "Échec du désabonnement. Réessayez plus tard.",
+    });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("unsubscribes the user and refreshes the profile page on success", async () => {
+    vi.mocked(authService.requireUser).mockResolvedValue(user);
+    vi.mocked(subscriptionService.unsubscribe).mockResolvedValue(undefined);
+    const formData = new FormData();
+    formData.append("topicId", "topic-1");
+
+    const result = await unsubscribeAction(undefined, formData);
+
+    expect(subscriptionService.unsubscribe).toHaveBeenCalledWith(
+      { topicId: "topic-1" },
+      "user-1",
+    );
+    expect(revalidatePath).toHaveBeenCalledWith("/profile");
     expect(result).toBeUndefined();
   });
 });

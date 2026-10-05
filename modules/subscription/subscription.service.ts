@@ -31,6 +31,16 @@ export class SubscriptionService {
 
     return this.repository.upsert(userId, input.topicId);
   }
+
+  /**
+   * Unsubscribes a user from a topic.
+   *
+   * @param input - Subscription form data
+   * @param userId - Subscriber ID
+   */
+  async unsubscribe(input: SubscriptionType, userId: string): Promise<void> {
+    await this.repository.delete(userId, input.topicId);
+  }
 }
 
 export const subscriptionService = new SubscriptionService();

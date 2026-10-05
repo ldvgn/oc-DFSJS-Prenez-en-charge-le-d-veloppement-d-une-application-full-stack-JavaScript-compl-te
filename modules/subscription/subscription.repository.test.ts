@@ -3,7 +3,7 @@ import { subscriptionRepository } from "./subscription.repository";
 import { prisma } from "@/lib/prisma";
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: { subscription: { upsert: vi.fn() } },
+  prisma: { subscription: { upsert: vi.fn(), deleteMany: vi.fn() } },
 }));
 
 describe("upsert", () => {
@@ -19,5 +19,17 @@ describe("upsert", () => {
       update: {},
     });
     expect(result).toBe(subscription);
+  });
+});
+
+describe("delete", () => {
+  it("deletes the user's subscription to the topic", async () => {
+    vi.mocked(prisma.subscription.deleteMany).mockResolvedValue({ count: 1 });
+
+    await subscriptionRepository.delete("user-1", "topic-1");
+
+    expect(prisma.subscription.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "user-1", topicId: "topic-1" },
+    });
   });
 });

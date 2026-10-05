@@ -72,3 +72,20 @@ describe("findAllWithSubscriptions", () => {
     expect(result).toBe(topics);
   });
 });
+
+describe("findSubscribedByUser", () => {
+  it("queries the topics the user subscribes to, sorted by name", async () => {
+    const topics = [
+      { id: "topic-1", name: "JavaScript", description: "Le langage du web" },
+    ];
+    vi.mocked(prisma.topic.findMany).mockResolvedValue(topics);
+
+    const result = await topicRepository.findSubscribedByUser("user-1");
+
+    expect(prisma.topic.findMany).toHaveBeenCalledWith({
+      where: { subscriptions: { some: { userId: "user-1" } } },
+      orderBy: { name: "asc" },
+    });
+    expect(result).toBe(topics);
+  });
+});

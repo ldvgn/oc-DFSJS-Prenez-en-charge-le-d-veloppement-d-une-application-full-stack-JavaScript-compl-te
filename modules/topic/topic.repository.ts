@@ -38,6 +38,19 @@ export class TopicRepository {
       orderBy: { name: "asc" },
     });
   }
+
+  /**
+   * Returns the topics the user subscribes to, sorted by name.
+   *
+   * @param userId - Subscriber ID
+   * @returns The subscribed topics
+   */
+  async findSubscribedByUser(userId: string): Promise<Topic[]> {
+    return prisma.topic.findMany({
+      where: { subscriptions: { some: { userId } } },
+      orderBy: { name: "asc" },
+    });
+  }
 }
 
 export const topicRepository = new TopicRepository();

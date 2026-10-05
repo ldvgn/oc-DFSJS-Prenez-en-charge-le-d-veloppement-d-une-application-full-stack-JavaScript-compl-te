@@ -13,7 +13,8 @@ export const RegisterSchema = z.object({
     .string()
     .trim()
     .min(3, "Au moins 3 caractères")
-    .max(30, "30 caractères maximum"),
+    .max(30, "30 caractères maximum")
+    .regex(/^[a-zA-Z0-9_.]+$/, "Lettres, chiffres, _ et . uniquement"),
   email: z.email("Adresse e-mail invalide"),
   password: PasswordSchema,
 });

@@ -16,6 +16,16 @@ export class SubscriptionRepository {
       update: {},
     });
   }
+
+  /**
+   * Deletes a subscription, if it exists.
+   *
+   * @param userId - Subscriber ID
+   * @param topicId - Topic ID
+   */
+  async delete(userId: string, topicId: string): Promise<void> {
+    await prisma.subscription.deleteMany({ where: { userId, topicId } });
+  }
 }
 
 export const subscriptionRepository = new SubscriptionRepository();

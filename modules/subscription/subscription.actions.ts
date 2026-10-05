@@ -44,3 +44,32 @@ export async function subscribeAction(
 
   revalidatePath("/topics");
 }
+
+/**
+ * Unsubscribes the user from a topic, then refreshes the profile page.
+ *
+ * @param formData - `topicId`
+ * @returns The errors to display
+ */
+export async function unsubscribeAction(
+  _state: SubscriptionState,
+  formData: FormData,
+): Promise<SubscriptionState> {
+  const user = await authService.requireUser();
+
+  const validatedFields = SubscriptionSchema.safeParse({
+    topicId: formData.get("topicId"),
+  });
+
+  if (!validatedFields.success) {
+    return { message: "Thème introuvable." };
+  }
+
+  try {
+    await subscriptionService.unsubscribe(validatedFields.data, user.id);
+  } catch {
+    return { message: "Échec du désabonnement. Réessayez plus tard." };
+  }
+
+  revalidatePath("/profile");
+}

@@ -54,3 +54,24 @@ describe("subscribe", () => {
     ).rejects.toThrow("DB down");
   });
 });
+
+describe("unsubscribe", () => {
+  it("deletes the user's subscription to the topic", async () => {
+    await subscriptionService.unsubscribe({ topicId: "topic-1" }, "user-1");
+
+    expect(subscriptionRepository.delete).toHaveBeenCalledWith(
+      "user-1",
+      "topic-1",
+    );
+  });
+
+  it("rethrows repository errors", async () => {
+    vi.mocked(subscriptionRepository.delete).mockRejectedValue(
+      new Error("DB down"),
+    );
+
+    await expect(
+      subscriptionService.unsubscribe({ topicId: "topic-1" }, "user-1"),
+    ).rejects.toThrow("DB down");
+  });
+});
