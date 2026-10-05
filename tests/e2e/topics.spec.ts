@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test("shows the topics the user already subscribes to as disabled", async ({
   page,
@@ -58,4 +58,27 @@ test("shows the posts of a topic in the feed once subscribed", async ({
 
   await page.goto("/posts");
   await expect(page.getByText(title)).toBeVisible();
+});
+
+test("shows an error when subscribing to an unknown topic", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("E-mail ou nom d'utilisateur").fill("alice");
+  await page.getByLabel("Mot de passe").fill("Password123!");
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL("/posts");
+
+  await page.getByRole("link", { name: "Thèmes" }).click();
+  await expect(page).toHaveURL("/topics");
+  const python = page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: "Python" }) });
+  await python
+    .locator('input[name="topicId"]')
+    .evaluate((input: HTMLInputElement) => (input.value = "unknown-topic"));
+  await python.getByRole("button", { name: "S'abonner" }).click();
+
+  await expect(python.getByText("Thème introuvable.")).toBeVisible();
+  await expect(python.getByRole("button", { name: "S'abonner" })).toBeEnabled();
 });

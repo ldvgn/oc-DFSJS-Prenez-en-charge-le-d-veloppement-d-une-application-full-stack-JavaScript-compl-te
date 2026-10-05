@@ -6,6 +6,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 import dotenv from "dotenv";
 import path from "path";
+import { isCoverage } from "./tests/e2e/coverage";
 dotenv.config({ path: path.resolve(__dirname, ".env.test"), quiet: true });
 
 /**
@@ -76,7 +77,8 @@ export default defineConfig({
   webServer: {
     command: "npm run build && npm run start -- -p 3001",
     url: "http://localhost:3001",
-    reuseExistingServer: !process.env.CI,
+    /* A coverage run needs a fresh build with source maps */
+    reuseExistingServer: !process.env.CI && !isCoverage,
     timeout: 180_000,
     env: {
       DATABASE_URL: process.env.DATABASE_URL!,
