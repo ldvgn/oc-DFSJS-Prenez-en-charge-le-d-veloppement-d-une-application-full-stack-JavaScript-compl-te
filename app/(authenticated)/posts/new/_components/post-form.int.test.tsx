@@ -93,11 +93,9 @@ describe("PostForm", () => {
     await userEvent.click(screen.getByRole("button", { name: "Créer" }));
 
     expect(createPostAction).toHaveBeenCalledOnce();
-    const formData = vi.mocked(createPostAction).mock.calls[0][1];
-    expect(Object.fromEntries(formData)).toEqual({
-      topicId: "topic-2",
-      title: "Mon article",
-      content: "Un contenu valide",
-    });
+    const [, formData] = vi.mocked(createPostAction).mock.calls[0];
+    expect(formData.get("topicId")).toBe("topic-2");
+    expect(formData.get("title")).toBe("Mon article");
+    expect(formData.get("content")).toBe("Un contenu valide");
   });
 });

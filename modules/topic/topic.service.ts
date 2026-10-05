@@ -25,6 +25,16 @@ export class TopicService {
   ): Promise<TopicWithSubscriptions[]> {
     return this.repository.findAllWithSubscriptions(userId);
   }
+
+  /**
+   * Returns the topics the user subscribes to, sorted by name.
+   *
+   * @param userId - Subscriber ID
+   * @returns The subscribed topics
+   */
+  async getSubscribedByUser(userId: string): Promise<Topic[]> {
+    return this.repository.findSubscribedByUser(userId);
+  }
 }
 
 export const topicService = new TopicService();

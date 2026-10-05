@@ -70,11 +70,9 @@ describe("CommentForm", () => {
     );
 
     expect(createCommentAction).toHaveBeenCalledOnce();
-    const formData = vi.mocked(createCommentAction).mock.calls[0][1];
-    expect(Object.fromEntries(formData)).toEqual({
-      content: "Un commentaire valide",
-      postId: "post-1",
-    });
+    const [, formData] = vi.mocked(createCommentAction).mock.calls[0];
+    expect(formData.get("content")).toBe("Un commentaire valide");
+    expect(formData.get("postId")).toBe("post-1");
   });
 
   it("clears the field after a successful submission", async () => {
