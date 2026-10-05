@@ -5,7 +5,7 @@ type BackLinkProps = {
   href?: string;
 };
 
-export default function BackLink({ href = "/" }: BackLinkProps) {
+export default function BackLink({ href = "/" }: Readonly<BackLinkProps>) {
   return (
     <Link
       href={href}

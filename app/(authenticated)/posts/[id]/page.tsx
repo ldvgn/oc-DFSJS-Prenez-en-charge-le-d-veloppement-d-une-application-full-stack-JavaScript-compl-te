@@ -5,7 +5,7 @@ import { PostMeta } from "../_components/post-meta";
 import PageHeader from "../../_components/page-header";
 import CommentForm from "./_components/comment-form";
 
-export default async function Post({ params }: PageProps<"/posts/[id]">) {
+export default async function Post({ params }: Readonly<PageProps<"/posts/[id]">>) {
   await authService.requireUser();
 
   const { id } = await params;

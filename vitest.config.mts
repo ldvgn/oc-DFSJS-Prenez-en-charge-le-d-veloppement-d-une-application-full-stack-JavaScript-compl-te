@@ -27,6 +27,8 @@ export default defineConfig({
     ],
     coverage: {
       provider: "v8",
+      reportsDirectory: "coverage/unit", // keeps coverage/e2e when cleaning
+      reporter: ["text", "html", "lcov"],
       include: ["modules/**", "app/**", "lib/**", "components/**"],
       exclude: [
         "**/*.test.*",

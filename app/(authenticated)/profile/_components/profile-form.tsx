@@ -19,7 +19,7 @@ type ProfileFormProps = {
   email: string;
 };
 
-export default function ProfileForm({ username, email }: ProfileFormProps) {
+export default function ProfileForm({ username, email }: Readonly<ProfileFormProps>) {
   const [state, formAction, isPending] = useActionState(
     updateProfileAction,
     undefined,
@@ -115,7 +115,7 @@ export default function ProfileForm({ username, email }: ProfileFormProps) {
         </Field>
 
         {state?.message && <p role="alert">{state.message}</p>}
-        {state?.success && <p role="status">Profil mis à jour.</p>}
+        {state?.success && <output>Profil mis à jour.</output>}
 
         <Button type="submit" disabled={isPending} className="mx-auto">
           {isPending ? "Sauvegarde…" : "Sauvegarder"}

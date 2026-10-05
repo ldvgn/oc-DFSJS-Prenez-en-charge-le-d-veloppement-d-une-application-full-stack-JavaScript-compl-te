@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/native-select";
 import { Button } from "@/components/ui/button";
 
-export default function PostForm({ topics }: { topics: Topic[] }) {
+export default function PostForm({ topics }: Readonly<{ topics: Topic[] }>) {
   const [state, formAction, isPending] = useActionState(
     createPostAction,
     undefined,

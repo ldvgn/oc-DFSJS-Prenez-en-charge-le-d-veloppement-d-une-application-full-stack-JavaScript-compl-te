@@ -13,7 +13,7 @@ import {
 } from "@/modules/comment/comment.schemas";
 import { createCommentAction } from "@/modules/comment/comment.actions";
 
-export default function CommentForm({ postId }: { postId: string }) {
+export default function CommentForm({ postId }: Readonly<{ postId: string }>) {
   const [state, formAction, isPending] = useActionState(
     createCommentAction,
     undefined,

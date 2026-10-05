@@ -24,6 +24,9 @@ npm run test:e2e              # starts postgres_test (port 5433), then Playwrigh
 npx playwright test tests/e2e/auth.spec.ts --project=chromium
 npm run test:e2e:coverage     # e2e on Chromium + front-end coverage per file in coverage/e2e
 npm run db:test:down
+
+npm run sonar:up              # local SonarQube on :9000 (compose profile "sonar")
+npm run sonar                 # scanner, token from SONAR_TOKEN in .env; run coverage first
 ```
 
 - Prisma config is in `prisma7.config.ts` (schema path, migrations, seed command). The client is generated to `prisma/generated/prisma` (git-ignored) and imported from `@/prisma/generated/prisma/client`, not `@prisma/client`. Run `npx prisma generate` if imports fail.

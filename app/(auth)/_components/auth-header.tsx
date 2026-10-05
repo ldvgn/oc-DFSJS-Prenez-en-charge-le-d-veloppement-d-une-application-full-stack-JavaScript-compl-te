@@ -1,7 +1,7 @@
 import { Logo } from "@/components/shared/logo";
 import BackLink from "@/components/shared/back-link";
 
-export default function AuthHeader({ title }: { title: string }) {
+export default function AuthHeader({ title }: Readonly<{ title: string }>) {
   return (
     <div className="flex flex-col gap-4">
       <div className="container mx-auto order-1 md:order-2">

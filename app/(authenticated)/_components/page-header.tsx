@@ -17,7 +17,7 @@ export default function PageHeader({
   titleId,
   backHref,
   align = "left",
-}: PageHeaderProps) {
+}: Readonly<PageHeaderProps>) {
   return (
     <>
       <BackLink href={backHref} />
