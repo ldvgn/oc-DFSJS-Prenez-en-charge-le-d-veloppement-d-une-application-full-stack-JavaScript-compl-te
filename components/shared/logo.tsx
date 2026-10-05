@@ -12,7 +12,7 @@ type LogoProps = {
   className?: string;
 };
 
-export function Logo({ size = "default", className }: LogoProps) {
+export function Logo({ size = "default", className }: Readonly<LogoProps>) {
   const { width, height, className: sizeClassName } = sizes[size];
 
   return (

@@ -5,7 +5,7 @@ type TopicCardProps = {
   children: React.ReactNode;
 };
 
-export function TopicCard({ topic, children }: TopicCardProps) {
+export function TopicCard({ topic, children }: Readonly<TopicCardProps>) {
   return (
     <article className="flex flex-col gap-4 p-4 bg-neutral-100 rounded-lg h-full">
       <h2>{topic.name}</h2>

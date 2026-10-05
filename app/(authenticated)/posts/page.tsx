@@ -5,7 +5,7 @@ import { SortButton } from "./_components/sort-button";
 import { authService } from "@/modules/auth/auth.service";
 import { PostCard } from "./_components/post-card";
 
-export default async function Posts({ searchParams }: PageProps<"/posts">) {
+export default async function Posts({ searchParams }: Readonly<PageProps<"/posts">>) {
   const user = await authService.requireUser();
 
   const { order: orderParam } = await searchParams;

@@ -4,7 +4,7 @@ type PostMetaProps = {
   topic?: string;
 };
 
-export function PostMeta({ createdAt, author, topic }: PostMetaProps) {
+export function PostMeta({ createdAt, author, topic }: Readonly<PostMetaProps>) {
   return (
     <div className="flex gap-8">
       {createdAt && (

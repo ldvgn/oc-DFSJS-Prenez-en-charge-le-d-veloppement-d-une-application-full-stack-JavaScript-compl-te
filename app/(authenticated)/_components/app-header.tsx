@@ -19,7 +19,7 @@ const links = [
   { href: "/topics", label: "Thèmes" },
 ];
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({ onNavigate }: Readonly<{ onNavigate?: () => void }>) {
   const pathname = usePathname();
 
   return (
@@ -56,7 +56,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function ProfileLink({ onNavigate }: { onNavigate?: () => void }) {
+function ProfileLink({ onNavigate }: Readonly<{ onNavigate?: () => void }>) {
   const isActive = usePathname().startsWith("/profile");
 
   return (

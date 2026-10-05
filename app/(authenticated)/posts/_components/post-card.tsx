@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { PostWithAuthor } from "@/modules/post/post.schemas";
 import { PostMeta } from "./post-meta";
 
-export function PostCard({ post }: { post: PostWithAuthor }) {
+export function PostCard({ post }: Readonly<{ post: PostWithAuthor }>) {
   return (
     <article className="relative space-y-4 p-4 bg-neutral-100 rounded-lg h-full hover:bg-neutral-200">
       <h2>

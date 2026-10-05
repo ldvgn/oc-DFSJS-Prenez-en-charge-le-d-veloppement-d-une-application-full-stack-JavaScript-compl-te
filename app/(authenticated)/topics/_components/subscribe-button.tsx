@@ -9,7 +9,7 @@ type SubscribeButtonProps = {
   subscribed: boolean;
 };
 
-export function SubscribeButton({ topicId, subscribed }: SubscribeButtonProps) {
+export function SubscribeButton({ topicId, subscribed }: Readonly<SubscribeButtonProps>) {
   const [state, formAction, isPending] = useActionState(
     subscribeAction,
     undefined,

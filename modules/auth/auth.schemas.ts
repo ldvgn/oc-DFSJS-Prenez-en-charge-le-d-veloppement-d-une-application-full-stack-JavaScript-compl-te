@@ -3,7 +3,7 @@ import z from "zod";
 export const PasswordSchema = z
   .string()
   .min(8, "Au moins 8 caractères")
-  .regex(/[0-9]/, "Au moins un chiffre")
+  .regex(/\d/, "Au moins un chiffre")
   .regex(/[a-z]/, "Au moins une lettre minuscule")
   .regex(/[A-Z]/, "Au moins une lettre majuscule")
   .regex(/[^A-Za-z0-9]/, "Au moins un caractère spécial");

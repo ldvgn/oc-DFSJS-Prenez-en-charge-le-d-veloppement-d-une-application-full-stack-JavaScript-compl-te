@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { unsubscribeAction } from "@/modules/subscription/subscription.actions";
 
-export function UnsubscribeButton({ topicId }: { topicId: string }) {
+export function UnsubscribeButton({ topicId }: Readonly<{ topicId: string }>) {
   const [state, formAction, isPending] = useActionState(
     unsubscribeAction,
     undefined,
