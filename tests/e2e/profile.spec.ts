@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test("removes a topic from the profile once unsubscribed", async ({ page }) => {
   const id = crypto.randomUUID().slice(0, 8);
@@ -80,4 +80,63 @@ test("shows an error when the email is already used", async ({ page }) => {
       "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé.",
     ),
   ).toBeVisible();
+});
+
+test("shows the field errors on an invalid profile", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("E-mail ou nom d'utilisateur").fill("bob");
+  await page.getByLabel("Mot de passe").fill("Password123!");
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL("/posts");
+
+  await page.goto("/profile");
+  await expect(page.getByLabel("Adresse e-mail")).toHaveValue("bob@mdd.dev");
+  await page.getByLabel("Nom d'utilisateur").fill("a");
+  await page.getByLabel("Adresse e-mail").fill("bob@mdd");
+  await page.getByLabel("Nouveau mot de passe").fill("short");
+  await page.getByRole("button", { name: "Sauvegarder" }).click();
+
+  await expect(page.getByText("Au moins 3 caractères")).toBeVisible();
+  await expect(page.getByText("Adresse e-mail invalide")).toBeVisible();
+  await expect(page.getByText("Au moins 8 caractères")).toBeVisible();
+});
+
+test("requires the current password to set a new one", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("E-mail ou nom d'utilisateur").fill("bob");
+  await page.getByLabel("Mot de passe").fill("Password123!");
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL("/posts");
+
+  await page.goto("/profile");
+  await expect(page.getByLabel("Adresse e-mail")).toHaveValue("bob@mdd.dev");
+  await page.getByLabel("Nouveau mot de passe").fill("NewPassword1!");
+  await page.getByRole("button", { name: "Sauvegarder" }).click();
+
+  await expect(
+    page.getByText("Le mot de passe actuel est requis"),
+  ).toBeVisible();
+});
+
+test("shows an error when unsubscribing with a forged topic", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("E-mail ou nom d'utilisateur").fill("alice");
+  await page.getByLabel("Mot de passe").fill("Password123!");
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL("/posts");
+
+  await page.getByRole("link", { name: "Mon profil" }).click();
+  await expect(page).toHaveURL("/profile");
+  const javascript = page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: "JavaScript" }) });
+  await javascript
+    .locator('input[name="topicId"]')
+    .evaluate((input: HTMLInputElement) => (input.value = ""));
+  await javascript.getByRole("button", { name: "Se désabonner" }).click();
+
+  await expect(javascript.getByText("Thème introuvable.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "JavaScript" })).toBeVisible();
 });
