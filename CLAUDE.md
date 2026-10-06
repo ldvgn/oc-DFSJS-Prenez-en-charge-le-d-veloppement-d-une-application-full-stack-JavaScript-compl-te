@@ -57,7 +57,7 @@ npm run sonar                 # scanner, token from SONAR_TOKEN in .env; run cov
 **Auth**:
 
 - `lib/auth.ts`: Better Auth config; `nextCookies()` plugin sets cookies from Server Actions.
-- `proxy.ts` (Next 16's replacement for `middleware.ts`): follows the Better Auth Next.js doc; full `auth.api.getSession` on `/posts`, `/topics`, `/profile` (matcher), redirects to `/login` without a session.
+- `proxy.ts` (Next 16's replacement for `middleware.ts`): follows the Better Auth Next.js doc; optimistic `getSessionCookie` check (cookie presence only, no DB) on `/posts`, `/topics`, `/profile` (matcher), redirects to `/login` without a session cookie.
 - `/`, `/login`, `/register` pages call `auth.api.getSession` themselves and redirect logged-in users to `/posts`.
 - Real session validation happens in pages/actions via `authService.requireUser()`, which must be called at the top of every protected page and Server Action.
 
