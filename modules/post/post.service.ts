@@ -5,7 +5,7 @@ import {
   type PostType,
   type PostWithAuthor,
   type SortOrder,
-} from "./post.schemas";
+} from "./post.definitions";
 
 export class PostService {
   constructor(private readonly repository: PostRepository = postRepository) {}

@@ -1,6 +1,6 @@
 import { type Comment } from "@/prisma/generated/prisma/client";
 import { CommentRepository, commentRepository } from "./comment.repository";
-import { type CommentType } from "./comment.schemas";
+import { type CommentType } from "./comment.definitions";
 
 export class CommentService {
   constructor(

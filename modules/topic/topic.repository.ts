@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { Topic } from "@/prisma/generated/prisma/client";
-import type { TopicWithSubscriptions } from "./topic.schemas";
+import type { TopicWithSubscriptions } from "./topic.definitions";
 
 export class TopicRepository {
   /**

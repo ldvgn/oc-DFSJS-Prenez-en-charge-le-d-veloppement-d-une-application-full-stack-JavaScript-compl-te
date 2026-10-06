@@ -37,7 +37,7 @@ npm run sonar                 # scanner, token from SONAR_TOKEN in .env; run cov
 
 **Layered modules** (`modules/<domain>/`): each domain has
 
-- `*.schemas.ts`: zod schema + inferred type + action state type (`PostSchema` / `PostType` / `PostState`), shared by client form and server action. Also holds the query result types (`PostWithAuthor`, `PostDetail`) written as `Prisma.XGetPayload<{ include: {...} }>` with `import type` only.
+- `*.definitions.ts`: zod schema + inferred type + action state type (`PostSchema` / `PostType` / `PostState`), shared by client form and server action. Also holds the query result types (`PostWithAuthor`, `PostDetail`) written as `Prisma.XGetPayload<{ include: {...} }>` with `import type` only.
 - `*.repository.ts`: only layer that touches `prisma`. `include` / `orderBy` are written inline in each query (no shared `include` constants).
 - `*.service.ts`: business logic over the repository. Classes with the repository injected via constructor default, exported as a singleton (`postService`, `commentService`).
 - `*.actions.ts`: `"use server"` Server Actions.
@@ -48,7 +48,7 @@ npm run sonar                 # scanner, token from SONAR_TOKEN in .env; run cov
 2. `Schema.safeParse(...)` from `FormData`; on failure return `{ errors: z.flattenError(err).fieldErrors }`.
 3. Call the service in `try/catch`; on failure return `{ message: "..." }`.
 4. `redirect()` (outside the try) or `revalidatePath()` on success.
-   State type (in `*.schemas.ts`) is `{ errors?: {field?: string[]}, message?: string } | undefined`.
+   State type (in `*.definitions.ts`) is `{ errors?: {field?: string[]}, message?: string } | undefined`.
 
 **Client forms** (`app/**/_components/*-form.tsx`): `useActionState(action)` + `useForm({ resolver: zodResolver(Schema) })`; native fields (`Input`, `Textarea`, `NativeSelect`) use `form.register(name)` inside shadcn `Field`/`FieldLabel`/`FieldError`, with errors from `form.formState.errors`. Keep `Controller` for non-native components only. No `defaultValues`: uncontrolled inputs keep what was typed before hydration (a controlled reset breaks WebKit e2e). `onSubmit` builds a `FormData` and calls `startTransition(() => formAction(fd))`. Field errors come from the client zod resolver only (the action re-validates with the same schema for security); `state.message` is rendered as `{state?.message && <p role="alert">…</p>}`.
 

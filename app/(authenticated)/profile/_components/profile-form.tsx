@@ -3,7 +3,7 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProfileSchema, type ProfileType } from "@/modules/user/user.schemas";
+import { ProfileSchema, type ProfileType } from "@/modules/user/user.definitions";
 import { updateProfileAction } from "@/modules/user/user.actions";
 import {
   Field,

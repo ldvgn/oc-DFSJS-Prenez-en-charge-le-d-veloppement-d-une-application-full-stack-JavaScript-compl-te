@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { isAPIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
 import { UserRepository, userRepository } from "./user.repository";
-import type { ProfileType } from "./user.schemas";
+import type { ProfileType } from "./user.definitions";
 
 export class UserService {
   constructor(private readonly repository: UserRepository = userRepository) {}

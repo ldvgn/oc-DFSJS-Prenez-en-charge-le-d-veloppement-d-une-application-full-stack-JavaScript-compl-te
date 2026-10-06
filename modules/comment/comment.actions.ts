@@ -3,7 +3,7 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/modules/auth/auth.service";
-import { CommentState, CreateCommentSchema } from "./comment.schemas";
+import { CommentState, CreateCommentSchema } from "./comment.definitions";
 import { commentService } from "./comment.service";
 
 /**

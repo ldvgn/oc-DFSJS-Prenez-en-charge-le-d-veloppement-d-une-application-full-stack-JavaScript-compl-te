@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import { notFound } from "next/navigation";
 import { authService } from "@/modules/auth/auth.service";
 import { postService } from "@/modules/post/post.service";
-import type { PostDetail } from "@/modules/post/post.schemas";
+import type { PostDetail } from "@/modules/post/post.definitions";
 import Post from "./page";
 
 vi.mock("next/navigation");

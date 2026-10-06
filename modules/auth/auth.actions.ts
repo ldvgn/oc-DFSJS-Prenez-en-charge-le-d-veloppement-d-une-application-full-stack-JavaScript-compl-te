@@ -7,7 +7,7 @@ import {
   LoginState,
   RegisterSchema,
   RegisterState,
-} from "./auth.schemas";
+} from "./auth.definitions";
 import { authService } from "./auth.service";
 
 /**

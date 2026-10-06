@@ -208,7 +208,7 @@ Each domain in `modules/` is split into layers:
 
 | File               | Role                                                                     |
 | ------------------ | ------------------------------------------------------------------------ |
-| `*.schemas.ts`     | zod schemas and types, shared by the client form and the Server Action   |
+| `*.definitions.ts` | zod schemas and types, shared by the client form and the Server Action   |
 | `*.repository.ts`  | Prisma queries (the only layer that accesses the database)               |
 | `*.service.ts`     | Business logic over the repository                                       |
 | `*.actions.ts`     | Server Actions: check the session, validate `FormData`, call the service |

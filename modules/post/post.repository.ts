@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma, type Post } from "@/prisma/generated/prisma/client";
-import type { PostDetail, PostWithAuthor, SortOrder } from "./post.schemas";
+import type { PostDetail, PostWithAuthor, SortOrder } from "./post.definitions";
 
 export class PostRepository {
   /**

@@ -3,7 +3,7 @@
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterSchema, type RegisterType } from "@/modules/auth/auth.schemas";
+import { RegisterSchema, type RegisterType } from "@/modules/auth/auth.definitions";
 import { registerAction } from "@/modules/auth/auth.actions";
 import {
   Field,

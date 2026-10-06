@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isAPIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
-import { LoginType, RegisterType } from "./auth.schemas";
+import { LoginType, RegisterType } from "./auth.definitions";
 
 export class AuthService {
   /**

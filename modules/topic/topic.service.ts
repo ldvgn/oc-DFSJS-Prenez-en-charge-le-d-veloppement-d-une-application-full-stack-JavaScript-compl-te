@@ -1,6 +1,6 @@
 import type { Topic } from "@/prisma/generated/prisma/client";
 import { TopicRepository, topicRepository } from "./topic.repository";
-import type { TopicWithSubscriptions } from "./topic.schemas";
+import type { TopicWithSubscriptions } from "./topic.definitions";
 
 export class TopicService {
   constructor(private readonly repository: TopicRepository = topicRepository) {}

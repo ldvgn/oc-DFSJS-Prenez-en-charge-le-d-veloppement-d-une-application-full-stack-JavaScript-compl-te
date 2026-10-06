@@ -1,5 +1,5 @@
 import z from "zod";
-import { PasswordSchema, RegisterSchema } from "@/modules/auth/auth.schemas";
+import { PasswordSchema, RegisterSchema } from "@/modules/auth/auth.definitions";
 
 export const ProfileSchema = RegisterSchema.pick({
   username: true,

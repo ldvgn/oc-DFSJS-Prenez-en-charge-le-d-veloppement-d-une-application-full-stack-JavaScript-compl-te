@@ -5,7 +5,7 @@ import { authService } from "@/modules/auth/auth.service";
 import {
   SubscriptionSchema,
   type SubscriptionState,
-} from "./subscription.schemas";
+} from "./subscription.definitions";
 import { subscriptionService } from "./subscription.service";
 
 /**

@@ -7,7 +7,7 @@ import {
   SubscriptionRepository,
   subscriptionRepository,
 } from "./subscription.repository";
-import type { SubscriptionType } from "./subscription.schemas";
+import type { SubscriptionType } from "./subscription.definitions";
 
 export class SubscriptionService {
   constructor(

@@ -16,7 +16,7 @@ Requested feature: $ARGUMENTS
 ## 2. Plan (STOP: wait for my approval)
 
 Present a short plan:
-- Files created / modified, per layer: `*.schemas.ts` → `*.repository.ts` → `*.service.ts` → `*.actions.ts` → page / `_components/*-form.tsx`.
+- Files created / modified, per layer: `*.definitions.ts` → `*.repository.ts` → `*.service.ts` → `*.actions.ts` → page / `_components/*-form.tsx`.
 - Prisma migration if needed (migration name).
 - Technical choices and rejected alternatives.
 - Planned tests (unit, integration, e2e).
@@ -27,7 +27,7 @@ Do not write any code before I approve.
 
 In small steps, from data to UI, following CLAUDE.md:
 - Migration: `npm run db:migrate -- --name <name>` (regenerates the client).
-- Repository: the only layer touching `prisma`; `include` / `orderBy` inline in each query (no shared constants). Payload types via `Prisma.XGetPayload` in `*.schemas.ts` (`import type` only).
+- Repository: the only layer touching `prisma`; `include` / `orderBy` inline in each query (no shared constants). Payload types via `Prisma.XGetPayload` in `*.definitions.ts` (`import type` only).
 - Server Action: `authService.requireUser()` → `safeParse` → service in `try/catch` → `redirect()` outside the try, or `revalidatePath()`.
 - Form: `useActionState` + RHF `form.register` on native fields (no `defaultValues`) + shadcn `Field`, message in a `role="alert"` element.
 - Protected page: `authService.requireUser()` first, `PageProps<"/route">`.

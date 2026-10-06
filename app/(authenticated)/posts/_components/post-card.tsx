@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { PostWithAuthor } from "@/modules/post/post.schemas";
+import type { PostWithAuthor } from "@/modules/post/post.definitions";
 import { PostMeta } from "./post-meta";
 
 export function PostCard({ post }: Readonly<{ post: PostWithAuthor }>) {

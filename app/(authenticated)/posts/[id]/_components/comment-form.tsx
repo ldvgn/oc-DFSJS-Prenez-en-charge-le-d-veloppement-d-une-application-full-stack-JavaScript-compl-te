@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   CommentSchema,
   type CommentType,
-} from "@/modules/comment/comment.schemas";
+} from "@/modules/comment/comment.definitions";
 import { createCommentAction } from "@/modules/comment/comment.actions";
 
 export default function CommentForm({ postId }: Readonly<{ postId: string }>) {

@@ -3,7 +3,7 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/modules/auth/auth.service";
-import { ProfileSchema, type ProfileState } from "./user.schemas";
+import { ProfileSchema, type ProfileState } from "./user.definitions";
 import { userService } from "./user.service";
 
 /**

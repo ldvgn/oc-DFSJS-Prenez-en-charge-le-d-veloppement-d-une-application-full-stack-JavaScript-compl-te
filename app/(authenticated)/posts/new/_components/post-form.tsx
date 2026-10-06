@@ -3,7 +3,7 @@
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PostSchema, type PostType } from "@/modules/post/post.schemas";
+import { PostSchema, type PostType } from "@/modules/post/post.definitions";
 import { createPostAction } from "@/modules/post/post.actions";
 import type { Topic } from "@/prisma/generated/prisma/client";
 import {

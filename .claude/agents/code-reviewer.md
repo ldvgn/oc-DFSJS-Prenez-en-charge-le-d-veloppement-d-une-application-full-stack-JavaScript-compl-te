@@ -33,7 +33,7 @@ Read `CLAUDE.md`, then every changed file in full (not just the hunk) and the re
 
 **Architecture**
 - `prisma` used only in `*.repository.ts`, imported from `@/prisma/generated/prisma/client`.
-- `include` / `orderBy` written inline in each query (no shared `include` constants); payload types via `Prisma.XGetPayload` in `*.schemas.ts` (`import type` only).
+- `include` / `orderBy` written inline in each query (no shared `include` constants); payload types via `Prisma.XGetPayload` in `*.definitions.ts` (`import type` only).
 - Action contract: `requireUser` → `safeParse` → `{ errors }` → service in `try/catch` → `{ message }` → `redirect`/`revalidatePath`.
 - Forms: `useActionState` + `form.register` on native fields (`Controller` only for non-native components, no `defaultValues`) + `Field`/`FieldError`, message in `role="alert"`.
 - Route components in `_components/`, `PageProps<"/route">`.

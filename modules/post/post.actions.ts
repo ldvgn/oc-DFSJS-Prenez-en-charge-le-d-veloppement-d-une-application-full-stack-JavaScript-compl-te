@@ -3,7 +3,7 @@
 import z from "zod";
 import { redirect } from "next/navigation";
 import { authService } from "@/modules/auth/auth.service";
-import { PostSchema, PostState } from "./post.schemas";
+import { PostSchema, PostState } from "./post.definitions";
 import { postService } from "./post.service";
 
 /**
@@ -25,9 +25,7 @@ export async function createPostAction(
   });
 
   if (!validatedFields.success) {
-    return {
-      errors: z.flattenError(validatedFields.error).fieldErrors,
-    };
+    return { errors: z.flattenError(validatedFields.error).fieldErrors };
   }
 
   let post;
